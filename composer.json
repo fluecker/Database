@@ -1,0 +1,25 @@
+{
+  "name": "fablueck/database",
+  "description": "Class to use easy MySql",
+  "authors": [
+    {
+      "name": "Fabian Luecker",
+      "email": "luecker.fabian@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "require": {
+    "jdorn/sql-formatter": "dev-master",
+    "php": ">=7.2"
+  },
+  "autoload": {
+    "psr-0": {
+      "Database\\": "src/"
+    },
+    "classmap": [
+      "src/"
+    ]
+  }
+}
