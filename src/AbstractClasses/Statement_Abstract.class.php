@@ -5,6 +5,7 @@ namespace Database\AbstractClasses;
 use Database\Exceptions\DatabaseStatementExceptions;
 use Database\Statements\Where\Functions\BetweenStatement;
 use Database\Statements\Where\Functions\ColumnStatement;
+use Database\Statements\Where\Functions\DateStatement;
 use Database\Statements\Where\Functions\IsNullStatement;
 
 /**
@@ -16,6 +17,8 @@ use Database\Statements\Where\Functions\IsNullStatement;
  * @method Statement_Abstract setIsNull(array $columns)
  * @method Statement_Abstract addBetween(array $columns)
  * @method Statement_Abstract setBetween(array $columns)
+ * @method Statement_Abstract addDateComparison(string $field, string $datefield, string $interval, string $separator = null)
+ * @method Statement_Abstract setDateComparison(string $field, string $datefield, string $interval, string $separator = null)
  */
 
 abstract class Statement_Abstract {
@@ -53,6 +56,11 @@ abstract class Statement_Abstract {
                 foreach($arguments[0] as $columns) {
                     $this->_collection[] = new ColumnStatement($columns);
                 }
+                break;
+            }
+            case 'addDateComparison':
+            case 'setDateComparison':{
+                    $this->_collection[] = new DateStatement($arguments[0], $arguments[1], $arguments[2], isset($arguments[3]) ? $arguments[3] : null);
                 break;
             }
         }

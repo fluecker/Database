@@ -7,8 +7,7 @@ class AddDate extends Date {
     protected $_alias = null;
     private $_interval = null;
 
-    public function __construct(string $val, string $interval, string $alias = null, bool $isVal = false)
-    {
+    public function __construct(string $val, string $interval, string $alias = null, bool $isVal = false){
         parent::__construct($val, $alias, $isVal);
         $this->_interval = new Interval($interval);
     }

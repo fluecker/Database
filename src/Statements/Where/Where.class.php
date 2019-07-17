@@ -28,6 +28,7 @@ class Where extends Statement_Abstract
      * Where constructor.
      * @param array|null $where
      * @throws DatabaseStatementExceptions
+     * @throws \Database\Exceptions\DatabaseExceptions
      */
     public function __construct(array $where = null){
         if($where !== null){

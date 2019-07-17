@@ -41,6 +41,7 @@ return array(
     'Database\\Statements\\Where\\Functions\\BetweenStatement' => $baseDir . '/src/Statements/Where/Functions/BetweenStatement.class.php',
     'Database\\Statements\\Where\\Functions\\ColumnStatement' => $baseDir . '/src/Statements/Where/Functions/ColumnStatement.class.php',
     'Database\\Statements\\Where\\Functions\\CommonStatement' => $baseDir . '/src/Statements/Where/Functions/CommonStatement.class.php',
+    'Database\\Statements\\Where\\Functions\\DateStatement' => $baseDir . '/src/Statements/Where/Functions/DateStatement.class.php',
     'Database\\Statements\\Where\\Functions\\IsNullStatement' => $baseDir . '/src/Statements/Where/Functions/IsNullStatement.class.php',
     'Database\\Statements\\Where\\Functions\\OrStatement' => $baseDir . '/src/Statements/Where/Functions/OrStatement.class.php',
     'Database\\Statements\\Where\\Functions\\SubSelectWhere' => $baseDir . '/src/Statements/Where/Functions/SubSelectWhere.class.php',

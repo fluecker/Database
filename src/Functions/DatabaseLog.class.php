@@ -13,7 +13,7 @@ class DatabaseLog {
                         touch(dirname(__DIR__) . $settings['file']['log_path']);
                     }
 
-                    error_log(date('Y-m-d H:i:s') . ' ' . ($time !== null ? $time . ' ' : '') . ($method !== null && $method !== '' ? $method . ' ' : '') . $query . PHP_EOL, 3, dirname(__DIR__) . $settings['file']['log_path']);
+                    error_log(date('Y-m-d H:i:s') . ' | ' . ($time !== null ? $time . ' | ' : '') . ($method !== null && $method !== '' ? $method . ' | ' : '') . $query . PHP_EOL, 3, dirname(__DIR__) . $settings['file']['log_path']);
                 } else {
                     throw new DatabaseExceptions('Attribute "log_path" is missing');
                 }

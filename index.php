@@ -82,6 +82,8 @@ $database->select()->addWhere()->addColumnComparison(
     ]
 );
 
+$database->select()->addWhere()->addDateComparison('co_date', 'co_id', '5 MINUTE', '<');
+
 $database->select()->addFrom(
     [
         ['components', 'com']

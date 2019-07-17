@@ -52,6 +52,7 @@ class ComposerStaticInit31e69cd1d03755ff47156ecf64826af8
         'Database\\Statements\\Where\\Functions\\BetweenStatement' => __DIR__ . '/../..' . '/src/Statements/Where/Functions/BetweenStatement.class.php',
         'Database\\Statements\\Where\\Functions\\ColumnStatement' => __DIR__ . '/../..' . '/src/Statements/Where/Functions/ColumnStatement.class.php',
         'Database\\Statements\\Where\\Functions\\CommonStatement' => __DIR__ . '/../..' . '/src/Statements/Where/Functions/CommonStatement.class.php',
+        'Database\\Statements\\Where\\Functions\\DateStatement' => __DIR__ . '/../..' . '/src/Statements/Where/Functions/DateStatement.class.php',
         'Database\\Statements\\Where\\Functions\\IsNullStatement' => __DIR__ . '/../..' . '/src/Statements/Where/Functions/IsNullStatement.class.php',
         'Database\\Statements\\Where\\Functions\\OrStatement' => __DIR__ . '/../..' . '/src/Statements/Where/Functions/OrStatement.class.php',
         'Database\\Statements\\Where\\Functions\\SubSelectWhere' => __DIR__ . '/../..' . '/src/Statements/Where/Functions/SubSelectWhere.class.php',
