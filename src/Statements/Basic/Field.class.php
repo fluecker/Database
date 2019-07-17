@@ -15,7 +15,15 @@ class Field extends Basic_Abstract {
             throw new DatabaseExceptions('Column cannot be empty');
         } else {
 
-            $this->_name = (DatabaseFunctions::allowedMysqlFunction($name) ? $name : '`' . DatabaseFunctions::real_escape_string($name). '`');
+            if(DatabaseFunctions::allowedMysqlFunction($name)){
+                $this->_name = $name;
+            } else {
+                foreach(explode('.', $name) as $parts){
+                    $this->_name .= '`' . DatabaseFunctions::real_escape_string($parts). '`.';
+                }
+
+                $this->_name = substr($this->_name , 0, -1);
+            }
         }
     }
 

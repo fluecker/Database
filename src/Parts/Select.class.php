@@ -106,7 +106,7 @@ class Select extends Parts_Abtract {
     }
 
     public function addLeftJoin(array $field, array $columns): Select{
-        $this->_sql_parts['left_join'] = new LeftJoin($field, $columns);
+        $this->_sql_parts['left_join'][] = new LeftJoin($field, $columns);
         return $this;
     }
 

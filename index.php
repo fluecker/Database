@@ -5,7 +5,7 @@ use Database\Database;
 
 $database = Database::getInstance([
         'config' => [
-            'debug' => true, //true = do not send the Query to server
+            'debug' => false, //true = do not send the Query to server
             'timer' => true, //true = save the sql execution time
             'log' => [
                 'enabled' => true, // true = enabled the log functions
@@ -43,54 +43,26 @@ $database = Database::getInstance([
     ]
 );
 
-$database->select('index.php')->addFields(
+$database->select()->addFields(
     [
-        'co_name', 'co_namespace', 'co_display_name', 'co_state', 'co_id', 'co_subnavof', 'co_order', 'co_icon'
-    ]
-)->addFields()->addDateInterval('co_id', '5 Days', 'co_date');
-
-$database->select()->addWhere(
-    [
-        ['co_state', 1]
+        'o.o_id', 'o_r_id', 'o_u_id', 'o_order_state', 'o_send_datetime', 'o_sum_value', 'o_isTestOrder',
+        'o_pdf_created', 'r_name', 'o_new_id', 'r_new_id', 'o_u_address', 'o_isRated', 'o_mobilOrder', 'pm_display_name'
     ]
 );
-
-$database->select()->addWhere()->addOr(
-    [
-        ['co_state', ''],
-        ['co_state', 1],
-    ]
-);
-
-$database->select()->addWhere(
-    [
-        ['co_name', '', '!=']
-    ]
-);
-
-$database->select()->addWhere()->addOr()->addIsNull(
-    [
-        ['co_id', true],
-        ['co_id'],
-    ]
-);
-
-$database->select()->addWhere()->addColumnComparison(
-    [
-        ['co_id', 'co_name', '<'],
-        ['co_id', 'co_name'],
-    ]
-);
-
-$database->select()->addWhere()->addDateComparison('co_date', 'co_id', '5 MINUTE', '<');
-$database->select()->addWhere()->addDateComparison('NOW()', 'co_id', '5 MINUTE', '<');
-
 $database->select()->addFrom(
     [
-        ['components', 'com']
+        ['orders','o']
+    ]
+);
+$database->select()->addLeftJoin(['restaurants', 'r'], ['o.o_r_id', 'r.r_new_id']);
+$database->select()->addLeftJoin(['paymentmethods', 'pm'], ['o.o_payment_id', 'pm.pm_id']);
+$database->select()->setOrder(
+    [
+        ['o_send_datetime', 'DESC']
     ]
 );
 
-
-$database->execute();
+echo '<pre>';
+    print_r($database->execute());
+echo '</pre>';
 

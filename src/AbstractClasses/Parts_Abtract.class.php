@@ -14,11 +14,22 @@ abstract class Parts_Abtract
 
         foreach($this->_queryBuild as $queryPart){
             if(isset($this->_sql_parts[$queryPart])) {
-                $part = $this->_sql_parts[$queryPart]->toSql();
-                if ($this->_sql_parts[$queryPart]->isMandatory() && $part === '') {
-                    throw new DatabaseExceptions(get_class($this->_sql_parts[$queryPart]) . ' must filled');
+                if(is_array($this->_sql_parts[$queryPart])){
+                    foreach($this->_sql_parts[$queryPart] as $innerPart){
+                        $part = $innerPart->toSql();
+                        if ($innerPart->isMandatory() && $part === '') {
+                            throw new DatabaseExceptions(get_class($innerPart) . ' must filled');
+                        }
+                        $query .= $innerPart->toSql() . ' ';
+                    }
+                } else {
+                    $part = $this->_sql_parts[$queryPart]->toSql();
+                    if ($this->_sql_parts[$queryPart]->isMandatory() && $part === '') {
+                        throw new DatabaseExceptions(get_class($this->_sql_parts[$queryPart]) . ' must filled');
+                    }
+                    $query .= $this->_sql_parts[$queryPart]->toSql() . ' ';
                 }
-                $query .= $this->_sql_parts[$queryPart]->toSql() . ' ';
+
             }
         }
 
