@@ -198,4 +198,12 @@ class DatabaseFunctions {
     public static function quoteString(string $string){
         return '\'' . $string . '\'';
     }
+
+    public static function allowedMysqlFunction(string $function):bool {
+        $functions = [
+            'NOW()',
+        ];
+
+        return in_array($function, $functions);
+    }
 }

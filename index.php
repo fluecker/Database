@@ -83,6 +83,7 @@ $database->select()->addWhere()->addColumnComparison(
 );
 
 $database->select()->addWhere()->addDateComparison('co_date', 'co_id', '5 MINUTE', '<');
+$database->select()->addWhere()->addDateComparison('NOW()', 'co_id', '5 MINUTE', '<');
 
 $database->select()->addFrom(
     [

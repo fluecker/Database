@@ -14,11 +14,12 @@ class Field extends Basic_Abstract {
         if(empty($name) || $name === ''){
             throw new DatabaseExceptions('Column cannot be empty');
         } else {
-            $this->_name = DatabaseFunctions::real_escape_string($name);
+
+            $this->_name = (DatabaseFunctions::allowedMysqlFunction($name) ? $name : '`' . DatabaseFunctions::real_escape_string($name). '`');
         }
     }
 
     public function toSql(): string{
-        return '`' . $this->_name . '`' . ($this->_alias !== null ? $this->_alias->toSql() : '');
+        return $this->_name . ($this->_alias !== null ? $this->_alias->toSql() : '');
     }
 }
