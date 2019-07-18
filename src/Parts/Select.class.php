@@ -2,6 +2,7 @@
 namespace Database\Parts;
 
 use Database\AbstractClasses\Parts_Abtract;
+use Database\Functions\DatabaseFunctions;
 use Database\Statements\Fields\Fields;
 use Database\Statements\From;
 use Database\Statements\Group;

@@ -5,7 +5,7 @@ use Database\Database;
 
 $database = Database::getInstance([
         'config' => [
-            'debug' => false, //true = do not send the Query to server
+            'debug' => true, //true = do not send the Query to server
             'timer' => true, //true = save the sql execution time
             'log' => [
                 'enabled' => true, // true = enabled the log functions
@@ -45,8 +45,8 @@ $database = Database::getInstance([
 
 $database->select()->addFields(
     [
-        'o.o_id', 'o_r_id', 'o_u_id', 'o_order_state', 'o_send_datetime', 'o_sum_value', 'o_isTestOrder',
-        'o_pdf_created', 'r_name', 'o_new_id', 'r_new_id', 'o_u_address', 'o_isRated', 'o_mobilOrder', 'pm_display_name'
+        'o.o_id', 'o.o_r_id', 'o.o_u_id', 'o.o_order_state', 'o.o_send_datetime', 'o.o_sum_value', 'o.o_isTestOrder',
+        'o.o_pdf_created', 'r.r_name', 'o.o_new_id', 'r.r_new_id', 'o.o_u_address', 'o.o_isRated', 'o.o_mobilOrder', 'pm.pm_display_name'
     ]
 );
 $database->select()->addFrom(
@@ -58,7 +58,20 @@ $database->select()->addLeftJoin(['restaurants', 'r'], ['o.o_r_id', 'r.r_new_id'
 $database->select()->addLeftJoin(['paymentmethods', 'pm'], ['o.o_payment_id', 'pm.pm_id']);
 $database->select()->setOrder(
     [
-        ['o_send_datetime', 'DESC']
+        ['o.o_send_datetime', 'DESC']
+    ]
+);
+
+$database->select()->addWhere([
+        [
+            ['o.o_send_datetime', 'date'],
+            ['NOW()', 'adddate', '-1 DAY'],
+            '>'
+        ], [
+            ['o.o_send_datetime', 'date'],
+            ['NOW()', 'adddate', '+1 DAY'],
+            '<'
+        ]
     ]
 );
 

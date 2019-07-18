@@ -4,7 +4,9 @@ namespace Database\Statements\Where;
 
 use Database\AbstractClasses\Statement_Abstract;
 use Database\Exceptions\DatabaseStatementExceptions;
+use Database\Functions\DatabaseFunctions;
 use Database\Statements\Basic\Separator;
+use Database\Statements\Where\Functions\ColumnStatement;
 use Database\Statements\Where\Functions\CommonStatement;
 use Database\Statements\Where\Functions\OrStatement;
 use Database\Statements\Where\Functions\SubSelectWhere;
@@ -43,16 +45,22 @@ class Where extends Statement_Abstract
      * @throws \Database\Exceptions\DatabaseExceptions
      */
     public function setWhere(array $where): void {
-        if(is_array($where) && count($where) > 0){
-            foreach($where as $key => $wh){
-                if($wh[0] !== '') {
-                    $this->_collection[] = new CommonStatement($wh[0], $wh[1], isset($wh[2]) ? $wh[2] : null);
-                } else {
-                    throw new DatabaseStatementExceptions('Column cannot be empty');
+        if(DatabaseFunctions::getArrayDepth($where) < 2) {
+            if (is_array($where) && count($where) > 0) {
+                foreach ($where as $key => $wh) {
+                    if ($wh[0] !== '') {
+                        $this->_collection[] = new CommonStatement($wh[0], $wh[1], isset($wh[2]) ? $wh[2] : null);
+                    } else {
+                        throw new DatabaseStatementExceptions('Column cannot be empty');
+                    }
                 }
+            } else {
+                throw new DatabaseStatementExceptions('Where cannot be empty');
             }
         } else {
-            throw new DatabaseStatementExceptions('Where cannot be empty');
+            foreach ($where as $key => $wh) {
+                    $this->_collection[] = new ColumnStatement($wh);
+            }
         }
     }
 

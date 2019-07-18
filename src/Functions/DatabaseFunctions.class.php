@@ -200,10 +200,31 @@ class DatabaseFunctions {
     }
 
     public static function allowedMysqlFunction(string $function):bool {
+        $allowed = false;
+
         $functions = [
-            'NOW()',
+            'NOW',
+            'DATE'
         ];
 
-        return in_array($function, $functions);
+        foreach($functions as $tmpFunction){
+            if(strpos($function, $tmpFunction) !== false){
+                $allowed = true;
+            }
+        }
+
+        return $allowed;
+    }
+
+    public static function getArrayDepth($array) {
+        $depth = 0;
+        $iteIte = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($array));
+
+        foreach ($iteIte as $ite) {
+            $d = $iteIte->getDepth();
+            $depth = $d > $depth ? $d : $depth;
+        }
+
+        return $depth;
     }
 }
