@@ -8,6 +8,7 @@ use Database\Functions\DatabaseFunctions;
 use Database\Statements\Basic\Separator;
 use Database\Statements\Where\Functions\ColumnStatement;
 use Database\Statements\Where\Functions\CommonStatement;
+use Database\Statements\Where\Functions\InStatement;
 use Database\Statements\Where\Functions\OrStatement;
 use Database\Statements\Where\Functions\SubSelectWhere;
 
@@ -93,6 +94,22 @@ class Where extends Statement_Abstract
             return end($this->_collection);
         } else {
             $this->_collection[] = new SubSelectWhere($field);
+            return end($this->_collection);
+        }
+    }
+
+    /**
+     * @param string|null $field
+     * @param array|null $values
+     * @param bool $new
+     * @return InStatement
+     * @throws \Database\Exceptions\DatabaseExceptions
+     */
+    public function addInStatement(string $field = null, array $values = null, bool $new = false): InStatement {
+        if(end($this->_collection) instanceof InStatement && !$new){
+            return end($this->_collection);
+        } else {
+            $this->_collection[] = new InStatement($field, $values);
             return end($this->_collection);
         }
     }

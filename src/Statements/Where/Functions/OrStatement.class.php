@@ -9,7 +9,7 @@ use Database\Statements\Basic\Separator;
  * Class OrStatement
  * @package Statements\Where\Functions
  */
-class OrStatement extends Statement_Abstract{
+class OrStatement extends Statement_Abstract {
     /**
      * @var array
      */

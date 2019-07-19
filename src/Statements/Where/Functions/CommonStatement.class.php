@@ -15,7 +15,7 @@ class CommonStatement extends Where_Abstract
     /**
      * @var Field|string
      */
-    private $_column = null;
+    protected $_column = null;
     /**
      * @var Value|string
      */
