@@ -27,6 +27,7 @@ class Database extends Database_Abstract {
     protected $_method = null;
     protected $_funcname = '';
     protected static $_function_index = -1;
+    private $_new_query = true;
 
     /**
      * @return string
@@ -92,6 +93,7 @@ class Database extends Database_Abstract {
 
     public function addUnion(){
         $this->_function[self::$_function_index]->addUnion();
+        $this->_new_query = true;
     }
 
     public function select(string $method = ''): Select {
@@ -99,9 +101,10 @@ class Database extends Database_Abstract {
             $this->_method = $method;
         }
 
-        if($this->_funcname !== 'Select'){
+        if($this->_funcname !== 'Select' || $this->_new_query){
             $this->_funcname = 'Select';
             $this->_function[++self::$_function_index] = new Select();
+            $this->_new_query = false;
         }
         return $this->_function[self::$_function_index];
     }

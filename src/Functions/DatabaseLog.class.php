@@ -4,7 +4,7 @@ namespace Database\Functions;
 use Database\Exceptions\DatabaseExceptions;
 
 class DatabaseLog {
-    public static function add(string $query, array $settings, string $method = null, $time = null) : string {
+    public static function add(string $query, array $settings, string $method = null, $time = null) {
 
         if(isset($settings['destination'])) {
             if ($settings['destination'] == 'file' || $settings['destination'] == 'all') {
@@ -27,7 +27,5 @@ class DatabaseLog {
         if(isset($settings['echo']) && $settings['echo']) {
             echo \SqlFormatter::format($query) . PHP_EOL . ($time !== null ? $time . PHP_EOL : '');
         }
-
-        return '';
     }
 }

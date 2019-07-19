@@ -45,18 +45,20 @@ $database = Database::getInstance([
 );
 
 //Is working
-$database->insert()->addTable('components');
-$database->insert()->addFields(['co_name', 'co_namespace', 'co_display_name', 'co_state', 'co_rights', 'co_id', 'co_underline']);
-$database->insert()->addValues(['test', 'test\test', 'TestComponente', 0, 0, 999999, 'test underline']);
-$database->insert()->addUnion();
+//$database->insert()->addTable('components');
+//$database->insert()->addFields(['co_name', 'co_namespace', 'co_display_name', 'co_state', 'co_rights', 'co_id', 'co_underline']);
+//$database->insert()->addValues(['test', 'test\test', 'TestComponente', 0, 0, 999999, 'test underline']);
+//$database->addUnion();
 //Is Working
-$database->select()->addFields(['*'])->addFrom('components')->addWhere([['co_name', 'test']]);
-$database->select()->addUnion();
+$database->select()->addFields(['*'])->addFrom('components')->addWhere([['co_state', 1]]);
+$database->addUnion();
+
+$database->select()->addFields(['*'])->addFrom('components')->addWhere([['co_name', 'rest']]);
 //Is Working
-$database->update()->addTable('components')->addFields([['co_namespace', 'test\rest']])->addWhere([['co_name', 'test']]);
-$database->update()->addUnion();
+//$database->update()->addTable('components')->addFields([['co_namespace', 'test\rest']])->addWhere([['co_name', 'test']]);
+//$database->addUnion();
 //Is working
-$database->delete()->addFrom('components')->addWhere([['co_name', 'test']]);
+//$database->delete()->addFrom('components')->addWhere([['co_name', 'test']]);
 
 echo '<pre>';
     print_r($database->execute());
