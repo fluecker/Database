@@ -18,8 +18,8 @@ use Database\Statements\Where\Functions\LikeStatement;
  * @method Statement_Abstract setIsNull(array $columns)
  * @method Statement_Abstract addLike(array $columns)
  * @method Statement_Abstract setLike(array $columns)
- * @method Statement_Abstract addBetween(array $columns)
- * @method Statement_Abstract setBetween(array $columns)
+ * @method Statement_Abstract addBetween($field, $value1 = null, $value2 = null)
+ * @method Statement_Abstract setBetween($field, $value1 = null, $value2 = null)
  * @method Statement_Abstract addDateComparison(string $field, string $datefield, string $interval, string $separator = null)
  * @method Statement_Abstract setDateComparison(string $field, string $datefield, string $interval, string $separator = null)
  */
@@ -40,7 +40,13 @@ abstract class Statement_Abstract {
         switch (strtolower($name)){
             case 'setbetween':
             case 'addbetween':{
-                $this->_collection[] = new BetweenStatement($arguments);
+                if(is_array($arguments[0])) {
+                    foreach ($arguments[0] as $columns) {
+                        $this->_collection[] = new BetweenStatement($columns[0], $columns[1], $columns[2]);
+                    }
+                } else {
+                    $this->_collection[] = new BetweenStatement($arguments[0], $arguments[1], $arguments[2]);
+                }
                 break;
             }
             case 'addisnull':
@@ -63,7 +69,7 @@ abstract class Statement_Abstract {
             }
             case 'adddatecomparison':
             case 'setdatecomparison':{
-                    $this->_collection[] = new DateStatement($arguments[0], $arguments[1], $arguments[2], isset($arguments[3]) ? $arguments[3] : null);
+                $this->_collection[] = new DateStatement($arguments[0], $arguments[1], $arguments[2], isset($arguments[3]) ? $arguments[3] : null);
                 break;
             }
             case 'addlike':

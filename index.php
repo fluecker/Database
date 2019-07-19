@@ -81,6 +81,9 @@ $database->select()->addWhere()->addOr()->addLike([['co.co_id', '%3%'], ['co.co_
 $database->select()->addWhere()->addInStatement('co.co_id')->addSubSelect()->addFields(['co_id'])->addFrom('components')->addWhere([['co.co_id', 1]])->setLimit(30);
 $database->select()->addWhere()->addInStatement('co.co_id', [1,2,3,4,56,7,8,9], true);
 
+$database->select()->addWhere()->addBetween('co_id', 'fsaf', 'sasf');
+$database->select()->addWhere()->addOr()->addBetween([['co_id', 'fsaf', 'sasf'], ['co_id', 5,2]]);
+
 echo '<pre>';
     print_r($database->execute());
 echo '</pre>';
