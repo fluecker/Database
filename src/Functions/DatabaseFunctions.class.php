@@ -204,7 +204,12 @@ class DatabaseFunctions {
 
         $functions = [
             'NOW',
-            'DATE'
+            'DATE',
+            'COUNT',
+            'MONTHNAME',
+            'YEAR',
+            'DAY',
+            'MONTH'
         ];
 
         foreach($functions as $tmpFunction){

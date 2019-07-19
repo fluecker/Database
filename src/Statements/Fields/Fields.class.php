@@ -17,6 +17,9 @@ use Database\Statements\Fields\Functions\SubSelect;
  * @package Statments
  */
 class Fields extends Statement_Abstract {
+    /**
+     * @var bool
+     */
     protected $_mandatory = true;
 
     /**
@@ -44,10 +47,10 @@ class Fields extends Statement_Abstract {
     }
 
     /**
-     * @param $fields
+     * @param null $fields
      * @return $this
+     * @throws DatabaseExceptions
      * @throws DatabaseStatementExceptions
-     * @throws \Exceptions\DatabaseExceptions
      */
     public function setFields($fields = null){
         if($fields !== null) {
@@ -102,6 +105,12 @@ class Fields extends Statement_Abstract {
         return $this;
     }
 
+    /**
+     * @param string|null $alias
+     * @param bool $new
+     * @return SubSelect
+     * @throws DatabaseStatementExceptions
+     */
     public function addSubSelect(string $alias = null, bool $new = false): SubSelect {
         if(end($this->_fields) instanceof SubSelect && !$new){
             return end($this->_fields);

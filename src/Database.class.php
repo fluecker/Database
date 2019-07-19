@@ -3,7 +3,9 @@ namespace Database;
 use Database\AbstractClasses\Database_Abstract;
 use Database\Exceptions\NoConnectionExceptions;
 use Database\Functions\DatabaseFunctions;
+use Database\Parts\Insert;
 use Database\Parts\Select;
+use Database\Parts\Update;
 
 /**
  * Class Database
@@ -85,7 +87,7 @@ class Database extends Database_Abstract {
         return parent::execute($query);
     }
 
-    public function select(string $method = ''): Select{
+    public function select(string $method = ''): Select {
         if($this->_method === null){
             $this->_method = $method;
         }
@@ -97,68 +99,28 @@ class Database extends Database_Abstract {
         return $this->_function;
     }
 
-    public function update($table, $fields, $where = null)
-    {
-        $query = '';
-
-        //Query Start
-        $query = "UPDATE " . self::clear_string($table) . " SET ";
-
-        //Add Columns
-        foreach($fields as $field)
-        {
-            if(!isset($field['ocolumn']))
-                $query .= self::clear_string($field['column']) . ' = \'' . trim(self::clear_string($field['value'])) . '\', ';
-            else
-                $query .= self::clear_string($field['column']) . ' = ' . self::clear_string($field['ocolumn']) . ', ';
+    public function update(string $method = ''): Update {
+        if($this->_method === null){
+            $this->_method = $method;
         }
 
-        //Remove ', '
-        $query = substr($query, 0, -2) . ' ';
-
-        //Add where
-        if($where !== null && isset($where[0]['column'])) {
-            $query .= $this->addWhere($where);
+        if($this->_function === null){
+            $this->_funcname = 'Update';
+            $this->_function = new Update();
         }
-
-        //Remove Whitespaces
-        $query = trim($query);
-
-        //Send the Query
-        return self::sendQuery($query);
+        return $this->_function;
     }
 
-    public function insert($table, $fields)
-    {
-        $query = '';
-
-        //Query Start
-        $query = "INSERT INTO " . self::clear_string($table) . " ";
-
-        //Add Columnset
-        $query .= "( ";
-        foreach($fields as $field)
-        {
-            $query .= self::clear_string($field['column']) . ', ';
+    public function insert(string $method = ''): Insert {
+        if($this->_method === null){
+            $this->_method = $method;
         }
 
-        //Remove ', '
-        $query = substr($query, 0, -2) . ') VALUES ( ';
-
-        //Add Values
-        foreach($fields as $field)
-        {
-            $query .= '\'' . trim(self::clear_string($field['value'])) . '\', ';
+        if($this->_function === null){
+            $this->_funcname = 'Insert';
+            $this->_function = new Insert();
         }
-
-        //Remove ', '
-        $query = substr($query, 0, -2) . ')';
-
-        //Remove Whitespaces
-        $query = trim($query);
-
-        //Send the Query
-        return self::sendQuery($query);
+        return $this->_function;
     }
 
     public function delete($table, $where)

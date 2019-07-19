@@ -3,6 +3,7 @@ namespace Database\Parts;
 
 use Database\AbstractClasses\Parts_Abtract;
 use Database\Functions\DatabaseFunctions;
+use Database\Interfaces\Part;
 use Database\Statements\Fields\Fields;
 use Database\Statements\From;
 use Database\Statements\Group;
@@ -16,7 +17,7 @@ use Database\Statements\LeftJoin;
  * Class Select
  * @package Parts
  */
-class Select extends Parts_Abtract {
+class Select extends Parts_Abtract implements Part {
 
     protected $_sql_parts = [];
 
@@ -37,7 +38,7 @@ class Select extends Parts_Abtract {
 
     /**
      * @param null $fields
-     * @return $this|mixed
+     * @return $this|Fields
      * @throws \Database\Exceptions\DatabaseExceptions
      * @throws \Database\Exceptions\DatabaseStatementExceptions
      */

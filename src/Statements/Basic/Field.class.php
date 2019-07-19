@@ -9,6 +9,13 @@ class Field extends Basic_Abstract {
     private $_name = '';
     protected $_alias = null;
 
+    /**
+     * @return bool
+     */
+    public function isMandatory(): bool {
+        return true;
+    }
+
     public function __construct(string $name, string $alias = null){
         parent::__construct($alias);
         if(empty($name) || $name === ''){

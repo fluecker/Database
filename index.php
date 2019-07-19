@@ -18,10 +18,10 @@ $database = Database::getInstance([
                     'connection_data' => [
                         'main_host' => true, //true use the main connection_data, false use the following connection_data
                         'host' => 'h2616533.stratoserver.net',
-                        'user' => 'fluecker',
-                        'pass' => '(Domwsib4)',
+                        'user' => 'aaa807479cce7a30',
+                        'pass' => '4Hodf#81',
                         'prefix' => '',
-                        'database' => 'lieferdev',
+                        'database' => '77038d8a13b981477fd896a87e57bbb962c0a0dc',
                         'port' => '3306',
                         'table' => 'log',
                         'charset' => 'utf8',
@@ -32,58 +32,21 @@ $database = Database::getInstance([
         ],
         'connection_data' => [
             'host' => 'h2616533.stratoserver.net',
-            'user' => 'fluecker',
-            'pass' => '(Domwsib4)',
+            'user' => 'aaa807479cce7a30',
+            'pass' => '4Hodf#81',
             'prefix' => '',
-            'database' => 'lieferdev',
+            'database' => '77038d8a13b981477fd896a87e57bbb962c0a0dc',
             'port' => '3306',
+            'table' => 'log',
             'charset' => 'utf8',
             'timezone' => 'Europe/Berlin',
         ]
     ]
 );
 
-$database->select()->addFields(
-    [
-        'o.o_id', 'o.o_r_id', 'o.o_u_id', 'o.o_order_state', 'o.o_send_datetime', 'o.o_sum_value', 'o.o_isTestOrder',
-        'o.o_pdf_created', 'r.r_name', 'o.o_new_id', 'r.r_new_id', 'o.o_u_address', 'o.o_isRated', 'o.o_mobilOrder', 'pm.pm_display_name'
-    ]
-);
-$database->select()->addFrom(
-    [
-        ['orders','o']
-    ]
-);
-$database->select()->addLeftJoin(['restaurants', 'r'], ['o.o_r_id', 'r.r_new_id']);
-$database->select()->addLeftJoin(['paymentmethods', 'pm'], ['o.o_payment_id', 'pm.pm_id']);
-$database->select()->setOrder(
-    [
-        ['o.o_send_datetime', 'DESC']
-    ]
-);
-
-$database->select()->addWhere([
-        [
-            ['o.o_send_datetime', 'date'],
-            ['NOW()', 'adddate', '-1 DAY'],
-            '>'
-        ], [
-            ['o.o_send_datetime', 'date'],
-            ['NOW()', 'adddate', '+1 DAY'],
-            '<'
-        ]
-    ]
-);
-
-$database->select()->addWhere()->addLike('co.co_id', '%3%');
-$database->select()->addWhere()->addOr()->addLike([['co.co_id', '%3%'], ['co.co_id', '%dfs%']]);
-
-$database->select()->addWhere()->addInStatement('co.co_id')->addSubSelect()->addFields(['co_id'])->addFrom('components')->addWhere([['co.co_id', 1]])->setLimit(30);
-$database->select()->addWhere()->addInStatement('co.co_id', [1,2,3,4,56,7,8,9], true);
-
-$database->select()->addWhere()->addBetween('co_id', 'fsaf', 'sasf');
-$database->select()->addWhere()->addOr()->addBetween([['co_id', 'fsaf', 'sasf'], ['co_id', 5,2]]);
-
+$database->insert()->addTable('components');
+$database->insert()->addFields(['co_id', 'co_id', 'co_id']);
+$database->insert()->addValues(['co_id', 1, 'co_id']);
 echo '<pre>';
     print_r($database->execute());
 echo '</pre>';

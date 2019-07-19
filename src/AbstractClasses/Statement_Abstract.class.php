@@ -31,8 +31,7 @@ abstract class Statement_Abstract {
     /**
      * @return bool
      */
-    public function isMandatory(): bool
-    {
+    public function isMandatory(): bool {
         return $this->_mandatory;
     }
 

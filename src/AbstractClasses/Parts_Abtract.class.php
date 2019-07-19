@@ -33,8 +33,6 @@ abstract class Parts_Abtract
             }
         }
 
-
-
         return trim($query);
     }
 }
