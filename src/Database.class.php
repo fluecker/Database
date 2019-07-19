@@ -3,9 +3,11 @@ namespace Database;
 use Database\AbstractClasses\Database_Abstract;
 use Database\Exceptions\NoConnectionExceptions;
 use Database\Functions\DatabaseFunctions;
+use Database\Parts\Delete;
 use Database\Parts\Insert;
 use Database\Parts\Select;
 use Database\Parts\Update;
+use Database\Statements\Union;
 
 /**
  * Class Database
@@ -17,13 +19,14 @@ use Database\Parts\Update;
  */
 class Database extends Database_Abstract {
     protected $db_link = '';
-    protected $_function = null;
+    protected $_function = [];
     protected $_isLog = false;
     protected $_logPath = '';
     protected $_isTimer = false;
     protected $_isDebug = false;
     protected $_method = null;
-    private $_funcname = '';
+    protected $_funcname = '';
+    protected static $_function_index = -1;
 
     /**
      * @return string
@@ -87,16 +90,20 @@ class Database extends Database_Abstract {
         return parent::execute($query);
     }
 
+    public function addUnion(){
+        $this->_function[self::$_function_index]->addUnion();
+    }
+
     public function select(string $method = ''): Select {
         if($this->_method === null){
             $this->_method = $method;
         }
 
-        if($this->_function === null){
+        if($this->_funcname !== 'Select'){
             $this->_funcname = 'Select';
-            $this->_function = new Select();
+            $this->_function[++self::$_function_index] = new Select();
         }
-        return $this->_function;
+        return $this->_function[self::$_function_index];
     }
 
     public function update(string $method = ''): Update {
@@ -104,11 +111,11 @@ class Database extends Database_Abstract {
             $this->_method = $method;
         }
 
-        if($this->_function === null){
+        if($this->_funcname !== 'Update'){
             $this->_funcname = 'Update';
-            $this->_function = new Update();
+            $this->_function[++self::$_function_index] = new Update();
         }
-        return $this->_function;
+        return $this->_function[self::$_function_index];
     }
 
     public function insert(string $method = ''): Insert {
@@ -116,32 +123,22 @@ class Database extends Database_Abstract {
             $this->_method = $method;
         }
 
-        if($this->_function === null){
+        if($this->_funcname !== 'Insert'){
             $this->_funcname = 'Insert';
-            $this->_function = new Insert();
+            $this->_function[++self::$_function_index] = new Insert();
         }
-        return $this->_function;
+        return $this->_function[self::$_function_index];
     }
 
-    public function delete($table, $where)
-    {
-        $query = '';
-
-        //Query Start
-        $query = 'DELETE FROM '. self::clear_string($table) . ' ';
-
-        //Add where
-        if($where !== null && isset($where[0]['column'])) {
-            $query .= $this->addWhere($where);
+    public function delete(string $method = ''): Delete {
+        if($this->_method === null){
+            $this->_method = $method;
         }
 
-        //Remove ' AND '
-        $query = substr($query, 0, -5). ' ';
-
-        //Remove Whitespaces
-        $query = trim($query);
-
-        //Send the Query
-        return self::sendQuery($query);
+        if($this->_funcname !== 'Delete'){
+            $this->_funcname = 'Delete';
+            $this->_function[++self::$_function_index] = new Delete();
+        }
+        return $this->_function[self::$_function_index];
     }
 }

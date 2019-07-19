@@ -29,6 +29,7 @@ abstract class Database_Abstract {
     protected $_isTimer = null;
     protected $_method = null;
     protected $_last_query = '';
+    protected $_funcname = '';
 
     /**
      * @return null
@@ -94,6 +95,7 @@ abstract class Database_Abstract {
         return $this->_connection;
     }
 
+
     /**
      * @param array $settings
      * @return bool
@@ -121,7 +123,7 @@ abstract class Database_Abstract {
 
     /**
      * @param string|null $query
-     * @return array|null
+     * @return array|null|bool
      * @throws DatabaseExceptions
      * @throws DatabaseQueryException
      * @throws NoConnectionExceptions
@@ -159,7 +161,11 @@ abstract class Database_Abstract {
 
         if(!$this->_isDebug) {
             if ($this->_result) {
-                return $this->getQueryResult($this->_result, $this->_connection);
+                if($this->_funcname === 'Select') {
+                    return $this->getQueryResult($this->_result, $this->_connection);
+                } else {
+                    return true;
+                }
             } else {
                 throw new DatabaseQueryException($this->_connection->error);
             }
@@ -173,7 +179,9 @@ abstract class Database_Abstract {
      * @return string
      */
     private function createQuery(): string {
-        $this->_last_query = $this->_function->toSql();
+        foreach($this->_function as $function){
+            $this->_last_query .= $function->toSql();
+        }
         return $this->_last_query;
     }
 

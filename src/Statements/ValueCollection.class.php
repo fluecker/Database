@@ -42,6 +42,9 @@ class ValueCollection extends Statement_Abstract {
             }
             $statement = substr($statement, 0, -2) . '), ';
         }
+
+        $statement = substr($statement, 0, -2);
+
         return $statement;
     }
 }

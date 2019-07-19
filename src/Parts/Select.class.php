@@ -32,10 +32,6 @@ class Select extends Parts_Abtract implements Part {
         'limit'
     ];
 
-    public function __construct(){
-        $this->_sql_parts['from'] = new From();
-    }
-
     /**
      * @param null $fields
      * @return $this|Fields
@@ -83,6 +79,9 @@ class Select extends Parts_Abtract implements Part {
      * @return Select
      */
     public function addFrom($from) : self{
+        if(!isset($this->_sql_parts['from'])) {
+            $this->_sql_parts['from'] = new From();
+        }
         $this->_sql_parts['from']->setTables($from);
         return $this;
     }

@@ -209,7 +209,8 @@ class DatabaseFunctions {
             'MONTHNAME',
             'YEAR',
             'DAY',
-            'MONTH'
+            'MONTH',
+            '*'
         ];
 
         foreach($functions as $tmpFunction){

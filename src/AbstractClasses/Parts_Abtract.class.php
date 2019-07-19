@@ -3,11 +3,17 @@ namespace Database\AbstractClasses;
 
 
 use Database\Exceptions\DatabaseExceptions;
+use Database\Statements\Union;
 
 abstract class Parts_Abtract
 {
     protected $_sql_parts = [];
     protected $_queryBuild = [];
+
+    public function addUnion(){
+        $this->_queryBuild[] = 'union';
+        $this->_sql_parts['union'] = new Union();
+    }
 
     protected function toSql(string $function): string{
         $query = $function . ' ';
@@ -33,6 +39,6 @@ abstract class Parts_Abtract
             }
         }
 
-        return trim($query);
+        return $query;
     }
 }
