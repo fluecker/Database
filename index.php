@@ -51,9 +51,12 @@ $database = Database::getInstance([
 //$database->addUnion();
 //Is Working
 $database->select()->addFields(['*'])->addFrom('components')->addWhere([['co_state', 1]]);
-$database->addUnion();
+$database->select()->addWhere()->addNotBetween('co_id', 1, 2);
+$database->select()->addWhere()->addNotLike('co_id', 'jfoaisdf%');
+$database->select()->addWhere()->addIsNotNull('co_id');
+//$database->addUnion();
 
-$database->select()->addFields(['*'])->addFrom('components')->addWhere([['co_name', 'rest']]);
+//$database->select()->addFields(['*'])->addFrom('components')->addWhere([['co_name', 'rest']]);
 //Is Working
 //$database->update()->addTable('components')->addFields([['co_namespace', 'test\rest']])->addWhere([['co_name', 'test']]);
 //$database->addUnion();

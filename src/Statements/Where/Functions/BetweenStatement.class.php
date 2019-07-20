@@ -3,6 +3,7 @@ namespace Database\Statements\Where\Functions;
 
 use Database\AbstractClasses\Statement_Abstract;
 use Database\Statements\Basic\Field;
+use Database\Statements\Basic\Not;
 use Database\Statements\Basic\Separator;
 use Database\Statements\Basic\Value;
 
@@ -28,6 +29,8 @@ class BetweenStatement extends Statement_Abstract {
      */
     protected $_column = null;
 
+    protected $_not = null;
+
     /**
      * BetweenStatement constructor.
      * @param string $field
@@ -35,18 +38,22 @@ class BetweenStatement extends Statement_Abstract {
      * @param $value2
      * @throws \Database\Exceptions\DatabaseExceptions
      */
-    public function __construct(string $field, $value1, $value2){
+    public function __construct(string $field, $value1, $value2, $not = false){
         $this->_column = new Field($field);
         $this->_value1 = new Value($value1);
         $this->_value2 = new Value($value2);
 
         $this->_separator = new Separator('AND');
+
+        if($not){
+            $this->_not = new Not();
+        }
     }
 
     /**
      * @return string
      */
     public function toSql():string {
-        return $this->_column->toSql() . 'BETWEEN' . $this->_value1->toSql() . $this->_separator->toSql() . $this->_value2->toSql();
+        return $this->_column->toSql() . ($this->_not !== null ? $this->_not->toSql() . ' ' : '') . 'BETWEEN ' . $this->_value1->toSql() . $this->_separator->toSql() . $this->_value2->toSql();
     }
 }

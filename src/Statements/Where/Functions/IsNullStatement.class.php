@@ -3,23 +3,24 @@ namespace Database\Statements\Where\Functions;
 
 
 use Database\Statements\Basic\Field;
+use Database\Statements\Basic\Not;
 
 class IsNullStatement
 {
     private $_beginn = 'IS';
-    private $_not = 'NOT';
     private $_end = 'NULL';
     private $_field = null;
-    private $_isNot = null;
+    private $_not = null;
 
-    public function __construct($statement) {
-        $this->_field = new Field($statement[0]);
-        if(isset($statement[1])) {
-            $this->_isNot = $statement[1];
+    public function __construct($statement, $not = false) {
+        $this->_field = new Field($statement);
+
+        if($not){
+            $this->_not = new Not();
         }
     }
 
     public function toSql(): string{
-        return $this->_field->toSql() . $this->_beginn . ($this->_isNot ?  ' ' . $this->_not : '') . ' ' . $this->_end;
+        return $this->_field->toSql() . $this->_beginn . ($this->_not !== null ?  ' ' . $this->_not->toSql() : '') . ' ' . $this->_end;
     }
 }
