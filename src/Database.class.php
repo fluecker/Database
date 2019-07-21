@@ -41,22 +41,26 @@ class Database extends Database_Abstract {
 
     /**
      * @param null $settings
+     * @param bool|null $new
      * @return Database
      * @throws NoConnectionExceptions
-     * @throws \Exceptions\DatabaseExceptions
      */
-    public static function getInstance($settings = null) : Database{
-        if (null === self::$_instance || $settings !== null) {
-            self::$_instance = new self($settings);
+    public static function getInstance($settings = null, $new = false) : Database{
+        if(!$new) {
+            if (null === self::$_instance || $settings !== null) {
+                self::$_instance = new self($settings);
+            }
+            return self::$_instance;
+        } else {
+            return new self($settings);
         }
-        return self::$_instance;
     }
 
     /**
      * Database constructor.
      * @param array $settings
+     * @throws Exceptions\DatabaseExceptions
      * @throws NoConnectionExceptions
-     * @throws \Exceptions\DatabaseExceptions
      */
     private function __construct(array $settings){
         if(isset($settings['config'])) {
@@ -89,6 +93,18 @@ class Database extends Database_Abstract {
 
     public function execute(string $query = null){
         return parent::execute($query);
+    }
+
+    public function disableLog(){
+        if(isset($this->_isLog['enabled'])){
+            $this->_isLog['enabled'] = false;
+        }
+    }
+
+    public function enableLog(){
+        if(isset($this->_isLog['enabled'])){
+            $this->_isLog['enabled'] = true;
+        }
     }
 
     public function addUnion(){

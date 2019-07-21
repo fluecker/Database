@@ -151,6 +151,8 @@ abstract class Database_Abstract {
                 $executionTime->end();
             }
 
+            $this->_function = [];
+
             //if database log is active, log all querys
             if(isset($this->_isLog['enabled']) && $this->_isLog['enabled']){
                 DatabaseLog::add($query, $this->_isLog, $this->_method, $executionTime);

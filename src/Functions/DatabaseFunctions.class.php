@@ -199,6 +199,17 @@ class DatabaseFunctions {
         return '\'' . $string . '\'';
     }
 
+    public static function createFolder(string $path, $rights = 0777): bool {
+        echo $path .PHP_EOL;
+        if ($path !== '' && !file_exists($path)){
+            if(!mkdir($path, $rights)){
+                throw new DatabaseExceptions('Cannot create the folder ' . $path);
+            }
+        }
+
+        return true;
+    }
+
     public static function allowedMysqlFunction(string $function):bool {
         $allowed = false;
 
@@ -213,9 +224,26 @@ class DatabaseFunctions {
             '*'
         ];
 
+        $disallowed = [
+            'SELECT',
+            'INSERT',
+            'UPDATE',
+            'DELETE',
+            'CREATE',
+            'ALTER'
+        ];
+
         foreach($functions as $tmpFunction){
             if(strpos($function, $tmpFunction) !== false){
                 $allowed = true;
+            }
+        }
+
+        if($allowed) {
+            foreach ($disallowed as $dis) {
+                if (strpos($function, $dis) !== false) {
+                    $allowed = false;
+                }
             }
         }
 
