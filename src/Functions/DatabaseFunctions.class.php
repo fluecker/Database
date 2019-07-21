@@ -200,7 +200,6 @@ class DatabaseFunctions {
     }
 
     public static function createFolder(string $path, $rights = 0777): bool {
-        echo $path .PHP_EOL;
         if ($path !== '' && !file_exists($path)){
             if(!mkdir($path, $rights)){
                 throw new DatabaseExceptions('Cannot create the folder ' . $path);
