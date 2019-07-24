@@ -5,9 +5,9 @@ use Database\Database;
 
 $database = Database::getInstance([
         'debug' => true, //true = do not send the Query to server, default = false
-        'timer' => false, //true = save the sql execution time, default = false
+        'timer' => true, //true = save the sql execution time, default = false
         'log' => true, //true = enable the log functions, default = false
-        'num_rows' => false, // true = shows the num rows of query, default = true
+        'num_rows' => true, // true = shows the num rows of query, default = true
         'log_destination' => 'all', //file = only in log file, database = only in database, all = file and database, default = file
         'echo' => true, // prints the Query, default = false
         'log_file_path' => dirname(__DIR__) . '/Database/src/Log', // full path to your logfile, default = /Log
@@ -49,7 +49,7 @@ $database = Database::getInstance([
 //$database->insert()->addValues(['test', 'test\test', 'TestComponente', 0, 0, 999999, 'test underline']);
 
 //Is Working
-$database->select()->addFields(['*'])->addFrom('components')->addWhere([['co_state', 1]]);
+$database->select()->setDistinct()->addFields(['*'])->addFrom('components')->addWhere([['co_state', 1]]);
 $database->select()->addWhere()->addNotBetween('co_id', 1, 2);
 $database->select()->addWhere()->addNotLike('co_id', 'jfoaisdf%');
 $database->select()->addWhere()->addIsNotNull('co_id');

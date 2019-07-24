@@ -209,5 +209,21 @@ class Config {
                 throw new DatabaseExceptions('Field "' . $val . '" cannot be empty or null on log connection array');
             }
         }
+
+        if(($this->_log_destination == 'all' || $this->_log_destination == 'database')){
+            if($this->_log_table_name === '' || $this->_log_table_name === null) {
+                throw new DatabaseExceptions('Table name cannot be empty');
+            }
+
+            if(count($this->_log_table_columns) == 0 || count($this->_log_table_values) == 0){
+                throw new DatabaseExceptions('Log table column and value are required values');
+            }
+
+            if(count($this->_log_table_values) !== count($this->_log_table_columns)){
+                throw new DatabaseExceptions('Log table columns and values must have the same count');
+            }
+        }
+
+
     }
 }

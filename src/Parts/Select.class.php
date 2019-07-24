@@ -4,6 +4,7 @@ namespace Database\Parts;
 use Database\AbstractClasses\Parts_Abtract;
 use Database\Functions\DatabaseFunctions;
 use Database\Interfaces\Part;
+use Database\Statements\Distinct;
 use Database\Statements\Fields\Fields;
 use Database\Statements\From;
 use Database\Statements\Group;
@@ -22,6 +23,7 @@ class Select extends Parts_Abtract implements Part {
     protected $_sql_parts = [];
 
     protected $_queryBuild = [
+        'distinct',
         'fields',
         'from',
         'join',
@@ -52,6 +54,11 @@ class Select extends Parts_Abtract implements Part {
             }
             return $this->_sql_parts['fields'];
         }
+    }
+
+    public function setDistinct(): self {
+        $this->_sql_parts['distinct'] = new Distinct();
+        return $this;
     }
 
     /**
