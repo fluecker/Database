@@ -33,13 +33,15 @@ class DatabaseFunctions {
      * @return bool
      * @throws DatabaseExceptions
      */
-    public static function setCharset(string $set, Database $connection) : bool {
+    public static function setCharset(Database $connection, string $set = null) : bool {
         try
         {
-            if($connection->getConnection()) {
-                $connection->getConnection()->set_charset($set);
-            } else {
-                throw new NoConnectionExceptions('No Connection');
+            if($set !== null) {
+                if ($connection->getConnection()) {
+                    $connection->getConnection()->set_charset($set);
+                } else {
+                    throw new NoConnectionExceptions('No Connection');
+                }
             }
 
             return true;

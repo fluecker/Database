@@ -1,102 +1,73 @@
 <?php
 namespace Database\Functions;
 
+use Database\Config\Config;
 use Database\Database;
-use Database\Exceptions\DatabaseExceptions;
 use Database\Exceptions\DatabaseLogExceptions;
 
 class DatabaseLog {
-    public static function add(string $query, array $settings, string $method = null, $time = null) {
+    public static function add(string $query, int $num_rows, string $method = null, $time = null) {
 
-        if(isset($settings['destination'])) {
-            if ($settings['destination'] == 'file' || $settings['destination'] == 'all') {
-                self::writeFileLog($settings, $query, $method, $time);
-            }
-
-            if ($settings['destination'] == 'database' || $settings['destination'] == 'all') {
-                if(isset($settings['database'])) {
-                    self::writeLogIntoDatabase($settings, $query, $method, $time);
-                } else {
-                    throw new DatabaseLogExceptions('Log Database settings are missing, add under "config" -> "log" -> "database" your MySql Connection Data');
-                }
-            }
+        if (Config::getInstance()->getLogDestination() == 'file' || Config::getInstance()->getLogDestination() == 'all') {
+            self::writeFileLog($query, $method, $num_rows, $time);
         }
 
-        if(isset($settings['echo']) && $settings['echo']) {
-            self::echoQuery($query, $time, true);
+        if (Config::getInstance()->getLogDestination() == 'database' || Config::getInstance()->getLogDestination() == 'all' && !Config::getInstance()->isDebug()) {
+            self::writeLogIntoDatabase($query, $num_rows, $method, $time);
+        }
+
+        if(Config::getInstance()->isEcho()) {
+            self::echoQuery($query, $num_rows, $time, true);
         }
     }
 
-    private static function writeLogIntoDatabase(array $settings, string $query, string $method, ExecutionTime $time = null){
-        if (!isset($settings['database']['main_host']) || !$settings['database']['main_host']) {
-            if(isset($settings['database']['connection_data'])) {
-                $database = Database::getInstance([
-                        'config' => [
-                            'debug' => false, //true = do not send the Query to server
-                            'timer' => false, //true = save the sql execution time
-                            'log' => [
-                                'enabled' => false, // true = enabled the log functions
-                            ]
-                        ],
-                        'connection_data' => [
-                            'host' => $settings['database']['connection_data']['host'],
-                            'user' => $settings['database']['connection_data']['user'],
-                            'pass' => $settings['database']['connection_data']['pass'],
-                            'prefix' => $settings['database']['connection_data']['prefix'],
-                            'database' => $settings['database']['connection_data']['database'],
-                            'port' => $settings['database']['connection_data']['port'],
-                            'charset' => $settings['database']['connection_data']['charset'],
-                            'timezone' => $settings['database']['connection_data']['timezone'],
-                        ]
-                    ]
-                    , true);
-            } else {
-                throw new DatabaseLogExceptions('Log Database Connection Data settings are missing, add under "config" -> "log" -> "database" -> "connection_data" your MySql Connection Data');
-            }
+    private static function writeLogIntoDatabase(string $query, int $num_rows, string $method, ExecutionTime $time = null){
+        if (!Config::getInstance()->isLogUseMainConnection()) {
+            $database = Database::getInstance([
+                    'connection_data' => Config::getInstance()->getLogConnection(),
+                ]
+                , true);
         } else {
             $database = Database::getInstance();
         }
 
-        foreach ($settings['database']['table_data']['values'] as $key => $value) {
+        foreach (Config::getInstance()->getLogTableValues() as $key => $value) {
             if (strstr($value, '[message]')) {
-                $settings['database']['table_data']['values'][$key] = str_replace('[message]', 'Ausgefuehrte Query: ' . $query, $value);
+                Config::getInstance()->setLogTableValues($key, str_replace('[message]', 'Ausgefuehrte Query: ' . $query, $value));
             }
 
-            if (strstr($value, '[time]') && $time !== null) {
-                $settings['database']['table_data']['values'][$key] = str_replace('[time]', $time, $value);
+            if (strstr($value, '[time]') && Config::getInstance()->isTimer()) {
+                Config::getInstance()->setLogTableValues($key, str_replace('[time]', $time, $value));
+            }
+
+            if (strstr($value, '[num_rows]') && Config::getInstance()->isNumRows() ) {
+                Config::getInstance()->setLogTableValues($key, str_replace('[num_rows]', $num_rows, $value));
             }
         }
 
-        $database->insert($method)->addTable($settings['database']['table_data']['name'])->addFields($settings['database']['table_data']['columns'])->addValues($settings['database']['table_data']['values']);
+        $database->insert($method)->addTable(Config::getInstance()->getLogTableName())->addFields(Config::getInstance()->getLogTableColumns())->addValues(Config::getInstance()->getLogTableValues());
         $database->execute();
     }
 
-    private static function writeFileLog(array $settings, string $query, string $method, ExecutionTime $time = null){
-        if (isset($settings['file']['log_path']) && $settings['file']['log_path'] !== '' && isset($settings['file']['log_file']) && $settings['file']['log_file'] !== '') {
-
-            if(DatabaseFunctions::createFolder($settings['file']['log_path'])) {
-                if (!file_exists($settings['file']['log_path'] . '/' . $settings['file']['log_file'])) {
-                    try{
-                        touch($settings['file']['log_path']);
-                    } catch(\Exception $ex){
-                        throw new DatabaseLogExceptions($ex->getMessage());
-                    }
+    private static function writeFileLog(string $query, string $method, int $num_rows, ExecutionTime $time = null){
+        if(DatabaseFunctions::createFolder(Config::getInstance()->getLogFilePath())) {
+            if (!file_exists(Config::getInstance()->getLogFilePath() . '/' . Config::getInstance()->getLogFileName())) {
+                try{
+                    touch(Config::getInstance()->getLogFileName());
+                } catch(\Exception $ex){
+                    throw new DatabaseLogExceptions($ex->getMessage());
                 }
-
-                error_log(date('Y-m-d H:i:s') . ' | ' . ($time !== null ? $time . ' | ' : '') . ($method !== null && $method !== '' ? $method . ' | ' : '') . $query . PHP_EOL, 3, $settings['file']['log_path'] . '/' . $settings['file']['log_file']);
-            } else {
-                throw new DatabaseLogExceptions('No logfile path');
             }
-        } else {
-            throw new DatabaseExceptions('Attribute "log_path" or "log_file" is missing or empty');
+
+            error_log(date('Y-m-d H:i:s') . ' | ' . (Config::getInstance()->isTimer() ? $time . ' | ' : '') . ($method !== null && $method !== '' ? $method . ' | ' : '') . (Config::getInstance()->isNumRows() ? 'Num Rows: ' . $num_rows . ' | ' : '') . $query . PHP_EOL, 3, Config::getInstance()->getLogFilePath() . '/' . Config::getInstance()->getLogFileName());
         }
     }
 
-    private static function echoQuery(string $query, ExecutionTime $time = null, bool $formated = true){
+    private static function echoQuery(string $query, $num_rows, ExecutionTime $time = null, bool $formated = true){
         if($formated) {
-            echo ($time !== null ? $time . PHP_EOL : '') . ' ' . \SqlFormatter::format($query) . PHP_EOL;
+            echo (Config::getInstance()->isTimer() ? $time . PHP_EOL : '') . (Config::getInstance()->isNumRows() ? 'Num Rows: ' . $num_rows . PHP_EOL : '') . ' ' . \SqlFormatter::format($query) . PHP_EOL;
         } else {
-            echo ($time !== null ? $time . PHP_EOL : '') . ' ' . $query . PHP_EOL;
+            echo (Config::getInstance()->isTimer() ? $time . PHP_EOL : '') . (Config::getInstance()->isNumRows() ? 'Num Rows: ' . $num_rows . PHP_EOL : '') . ' ' . $query . PHP_EOL;
         }
     }
 }

@@ -8,6 +8,7 @@
 
 namespace Database\AbstractClasses;
 
+use Database\Config\Config;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Exceptions\DatabaseQueryException;
 use Database\Exceptions\NoConnectionExceptions;
@@ -17,19 +18,12 @@ use Database\Functions\ExecutionTime;
 
 abstract class Database_Abstract {
     protected $_function = null;
-    protected $_where = null;
-    protected $_order = null;
-    protected $_group = null;
-    protected $_join = null;
-    protected $_fields = null;
     protected $_connection = null;
     protected $_result = null;
-    protected $_isLog = [];
-    protected $_isDebug = null;
-    protected $_isTimer = null;
     protected $_method = null;
     protected $_last_query = '';
     protected $_funcname = '';
+    protected $_num_rows = 0;
 
     /**
      * @return null
@@ -37,46 +31,6 @@ abstract class Database_Abstract {
     public function getFunction()
     {
         return $this->_function;
-    }
-
-    /**
-     * @return null
-     */
-    public function getWhere()
-    {
-        return $this->_where;
-    }
-
-    /**
-     * @return null
-     */
-    public function getOrder()
-    {
-        return $this->_order;
-    }
-
-    /**
-     * @return null
-     */
-    public function getGroup()
-    {
-        return $this->_group;
-    }
-
-    /**
-     * @return null
-     */
-    public function getJoin()
-    {
-        return $this->_join;
-    }
-
-    /**
-     * @return null
-     */
-    public function getFields()
-    {
-        return $this->_fields;
     }
 
     /**
@@ -97,20 +51,21 @@ abstract class Database_Abstract {
 
 
     /**
-     * @param array $settings
      * @return bool
      * @throws DatabaseExceptions
      */
-    protected function setConnection(array $settings) : bool {
+    protected function setConnection() : bool {
         try {
-            $this->_connection = new \mysqli($settings['host'], $settings['user'], $settings['pass'], $settings['database'], $settings['port']);
+            $this->_connection = new \mysqli(
+                Config::getInstance()->getMainConnection('host'),
+                Config::getInstance()->getMainConnection('user'),
+                Config::getInstance()->getMainConnection('pass'),
+                Config::getInstance()->getMainConnection('database'),
+                Config::getInstance()->getMainConnection('port')
+            );
 
             if(!$this->_connection) {
                 throw new NoConnectionExceptions('No Connection');
-            }
-
-            if(isset($settings['charset']) && $settings['charset'] !== ''){
-                DatabaseFunctions::setCharset($settings['charset'], $this);
             }
 
             $this->_connection->query("SET lc_time_names = 'de_DE'");
@@ -136,32 +91,35 @@ abstract class Database_Abstract {
             $query = $this->createQuery();
         }
 
-        if ($this->_connection || $this->_isDebug) {
+        if ($this->_connection || Config::getInstance()->isDebug()) {
 
-            if($this->_isTimer){ //Set start time
+            if(Config::getInstance()->isTimer()){ //Set start time
                 $executionTime = new ExecutionTime();
                 $executionTime->start();
             }
 
-            if(!$this->_isDebug) {
+            if(!Config::getInstance()->isDebug()) {
                 $this->_result = $this->_connection->query($query); //execute query
+                if(Config::getInstance()->isNumRows()) {
+                    $this->_num_rows = DatabaseFunctions::numRows($this);
+                }
             }
 
-            if($this->_isTimer){ //Set start time
+            if(Config::getInstance()->isTimer()){ //Set start time
                 $executionTime->end();
             }
 
             $this->_function = [];
 
             //if database log is active, log all querys
-            if(isset($this->_isLog['enabled']) && $this->_isLog['enabled']){
-                DatabaseLog::add($query, $this->_isLog, $this->_method, $executionTime);
+            if(Config::getInstance()->isLog()){
+                DatabaseLog::add($query, $this->_num_rows, $this->_method, $executionTime);
             }
         } else {
             throw new NoConnectionExceptions('No Connection');
         }
 
-        if(!$this->_isDebug) {
+        if(!Config::getInstance()->isDebug()) {
             if ($this->_result) {
                 if($this->_funcname === 'Select') {
                     return $this->getQueryResult($this->_result, $this->_connection);
@@ -210,7 +168,7 @@ abstract class Database_Abstract {
     /**
      * Bereitet das Result vor und gibt es als stdClass zurück
      * @param \mysqli_result $result
-     * @return array
+     * @return array Query Result
      */
     private function prepareResult(\mysqli_result $result): array{
         $return = [];
