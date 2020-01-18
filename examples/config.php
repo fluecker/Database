@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '/vendor/autoload.php';
+
+require_once '../vendor/autoload.php';
 
 use Database\Database;
 
@@ -12,7 +13,7 @@ $database = Database::getInstance([
                 'destination' => 'all', //file = only in log file, database = only in database, all = file and database
                 'echo' => true, // prints the Query
                 'file' => [
-                    'log_path' => dirname(__DIR__) . '/Database/src/Log', // full path to your logfile
+                    'log_path' => dirname(__DIR__) . '/Log', // full path to your logfile
                     'log_file' => 'Query.log', // Path for file log
                 ],
                 'database' => [ //Database config to store the logs into a table
@@ -51,27 +52,3 @@ $database = Database::getInstance([
         ]
     ]
 );
-
-//Is working
-//$database->insert()->addTable('components');
-//$database->insert()->addFields(['co_name', 'co_namespace', 'co_display_name', 'co_state', 'co_rights', 'co_id', 'co_underline']);
-//$database->insert()->addValues(['test', 'test\test', 'TestComponente', 0, 0, 999999, 'test underline']);
-
-//Is Working
-$database->select()->addFields(['*'])->addFrom('components')->addWhere([['co_state', 1]]);
-$database->select()->addWhere()->addNotBetween('co_id', 1, 2);
-$database->select()->addWhere()->addNotLike('co_id', 'jfoaisdf%');
-$database->select()->addWhere()->addIsNotNull('co_id');
-
-//$database->select()->addFields(['*'])->addFrom('components')->addWhere([['co_name', 'rest']]);
-
-//Is Working
-//$database->update()->addTable('components')->addFields([['co_namespace', 'test\rest']])->addWhere([['co_name', 'test']]);
-
-//Is working
-//$database->delete()->addFrom('components')->addWhere([['co_name', 'test']]);
-
-echo '<pre>';
-print_r($database->execute());
-echo '</pre>';
-

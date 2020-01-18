@@ -1,26 +1,33 @@
 {
-  "name": "fluecker/database",
-  "description": "Class to use easy MySql",
-  "version": "v1.2",
-  "authors": [
-    {
-      "name": "Fabian Lücker",
-      "email": "fabian@f-luecker.de",
-      "role": "Developer"
-    }
-  ],
-  "license": "MIT",
-  "minimum-stability": "dev",
-  "require": {
-    "jdorn/sql-formatter": "dev-master",
-    "php": ">=7.2"
-  },
-  "autoload": {
-    "psr-0": {
-      "Database\\": "src/"
+    "name": "fluecker/database",
+    "description": "Class to use easy MySql",
+    "version": "v1.2",
+    "keywords": [
+        "database",
+        "easy",
+        "queries"
+    ],
+    "type": "library",
+    "authors": [
+        {
+            "name": "Fabian Lücker",
+            "email": "fabian@f-luecker.de",
+            "role": "Developer",
+            "homepage": "https://www.f-luecker.de/"
+        }
+    ],
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "require": {
+        "jdorn/sql-formatter": "dev-master",
+        "php": ">=7.2"
     },
-    "classmap": [
-      "src/"
-    ]
-  }
+    "autoload": {
+        "psr-0": {
+            "Database\\": "src/"
+        },
+        "classmap": [
+            "src/"
+        ]
+    }
 }

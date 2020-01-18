@@ -1,5 +1,6 @@
 <?php
 namespace Database\Functions;
+use Database\AbstractClasses\Database_Abstract;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Database;
 use Database\Exceptions\DatabaseStatementExceptions;
@@ -34,11 +35,11 @@ class DatabaseFunctions {
     /**
      * Setzt das Datenbank Charset
      * @param string $set
-     * @param Database $connection
+     * @param Database_Abstract $connection
      * @return bool
      * @throws DatabaseExceptions
      */
-    public static function setCharset(string $set, Database $connection) : bool {
+    public static function setCharset(string $set, Database_Abstract $connection) : bool {
         try
         {
             if($connection->getConnection()) {
