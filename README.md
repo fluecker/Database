@@ -153,10 +153,6 @@ $database->execute($query);
 
 For more examples, look into the "example" folder.
 
-## Built With
-
-* [SQL-Formatter](https://github.com/jdorn/sql-formatter) - The web framework used
-
 ## Authors
 
 * **Fabian Lücker** - [f-Luecker](https://www.f-luecker.de)
