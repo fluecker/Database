@@ -28,10 +28,10 @@ $database = Database::getInstance([
                         'charset' => 'utf8',
                         'timezone' => 'Europe/Berlin',
                     ],
-                    'table_data' => [
-                        'name' => '',
-                        'columns' => [],
-                        'values' => []
+                    'table_data' => [ //log table
+                        'name' => '', //log table name
+                        'columns' => [], //log table columns
+                        'values' => [] //log table values
                     ],
                 ],
             ]
