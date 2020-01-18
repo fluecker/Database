@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d626b54cdca0160223105fde89447d4d",
+    "content-hash": "65144250456c90dcf9cfd9bd5002273a",
     "packages": [
         {
             "name": "jdorn/sql-formatter",

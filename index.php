@@ -4,22 +4,42 @@ require_once __DIR__ . '/vendor/autoload.php';
 use Database\Database;
 
 $database = Database::getInstance([
-        'debug' => true, //true = do not send the Query to server, default = false
-        'timer' => true, //true = save the sql execution time, default = false
-        'log' => true, //true = enable the log functions, default = false
-        'num_rows' => true, // true = shows the num rows of query, default = true
-        'log_destination' => 'all', //file = only in log file, database = only in database, all = file and database, default = file
-        'echo' => true, // prints the Query, default = false
-        'log_file_path' => dirname(__DIR__) . '/Database/src/Log', // full path to your logfile, default = /Log
-        'log_file_name' => 'Query.log', // Path for file log, default = Query.log
-        'log_table_name' => 'log',
-        'log_table_columns' => [
-            'l_origin', 'l_state', 'l_remoteAddr', 'l_refer', 'l_browser', 'l_user', 'l_logKind', 'l_path', 'l_class', 'l_method', 'l_queryString', 'l_errorMessage', 'l_create_at'
+        'config' => [
+            'debug' => false, //true = do not send the Query to server
+            'timer' => true, //true = save the sql execution time
+            'log' => [
+                'enabled' => true, // true = enabled the log functions
+                'destination' => 'all', //file = only in log file, database = only in database, all = file and database
+                'echo' => true, // prints the Query
+                'file' => [
+                    'log_path' => dirname(__DIR__) . '/Database/src/Log', // full path to your logfile
+                    'log_file' => 'Query.log', // Path for file log
+                ],
+                'database' => [ //Database config to store the logs into a table
+                    'connection_data' => [
+                        'main_host' => true, //true use the main connection_data, false use the following connection_data
+                        'host' => 'h2616533.stratoserver.net',
+                        'user' => 'fluecker',
+                        'pass' => '(Domwsib4)',
+                        'prefix' => '',
+                        'database' => 'lieferdev',
+                        'port' => '3306',
+                        'charset' => 'utf8',
+                        'timezone' => 'Europe/Berlin',
+                    ],
+                    'table_data' => [
+                        'name' => 'log',
+                        'columns' => [
+                            'l_origin', 'l_state', 'l_remoteAddr', 'l_refer', 'l_browser', 'l_user', 'l_logKind', 'l_path', 'l_class', 'l_method', 'l_queryString', 'l_errorMessage', 'l_create_at'
+                        ],
+                        'values' => [
+                            'testSeite', '1', '0.0.0.0', 'vorherige seite', 'chrome', 'ich', 'mysql', 'hier', 'da', 'die', '[time]', '[message]', date('Y-m-d H:i:s')
+                        ]
+                    ],
+                ],
+            ]
         ],
-        'log_table_values' => [
-            'testSeite', '1', '0.0.0.0', 'vorherige seite', 'chrome', 'ich', 'mysql', 'hier', 'da', 'die', '[time]', '[message]', date('Y-m-d H:i:s')
-        ],
-        'main_connection' => [
+        'connection_data' => [
             'host' => 'h2616533.stratoserver.net',
             'user' => 'fluecker',
             'pass' => '(Domwsib4)',
@@ -28,18 +48,7 @@ $database = Database::getInstance([
             'port' => '3306',
             'charset' => 'utf8',
             'timezone' => 'Europe/Berlin',
-        ],
-        'log_use_main_connection' => true, //true use the main connection_data, false use the following connection_data
-        'log_connection' => [
-            'host' => 'h2616533.stratoserver.net',
-            'user' => 'fluecker',
-            'pass' => '(Domwsib4)',
-            'prefix' => '',
-            'database' => 'lieferdev',
-            'port' => '3306',
-            'charset' => 'utf8',
-            'timezone' => 'Europe/Berlin',
-        ],
+        ]
     ]
 );
 
@@ -49,7 +58,7 @@ $database = Database::getInstance([
 //$database->insert()->addValues(['test', 'test\test', 'TestComponente', 0, 0, 999999, 'test underline']);
 
 //Is Working
-$database->select()->setDistinct()->addFields(['*'])->addFrom('components')->addWhere([['co_state', 1]]);
+$database->select()->addFields(['*'])->addFrom('components')->addWhere([['co_state', 1]]);
 $database->select()->addWhere()->addNotBetween('co_id', 1, 2);
 $database->select()->addWhere()->addNotLike('co_id', 'jfoaisdf%');
 $database->select()->addWhere()->addIsNotNull('co_id');
@@ -62,5 +71,7 @@ $database->select()->addWhere()->addIsNotNull('co_id');
 //Is working
 //$database->delete()->addFrom('components')->addWhere([['co_name', 'test']]);
 
-$database->execute();
+echo '<pre>';
+print_r($database->execute());
+echo '</pre>';
 

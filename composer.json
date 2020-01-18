@@ -1,10 +1,11 @@
 {
-  "name": "fablueck/database",
+  "name": "fluecker/database",
   "description": "Class to use easy MySql",
+  "version": "v1.2",
   "authors": [
     {
-      "name": "Fabian Luecker",
-      "email": "luecker.fabian@gmail.com",
+      "name": "Fabian Lücker",
+      "email": "fabian@f-luecker.de",
       "role": "Developer"
     }
   ],
