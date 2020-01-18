@@ -1,4 +1,5 @@
 <?php
+include 'config.php';
 
 $database->delete()->addFrom('table')->addWhere(
     [

@@ -1,4 +1,6 @@
 <?php
+include 'config.php';
+
 $database->select()->addFields(['*'])->addFrom('table')->addWhere([['value', 1]]);
 $database->select()->addWhere()->addLike('id', 'expression');
 

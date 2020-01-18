@@ -1,4 +1,5 @@
 <?php
+include 'config.php';
 
 $database->update()->addTable('table')->addFields(
     [

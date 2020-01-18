@@ -1,4 +1,5 @@
 <?php
+include 'config.php';
 
 $database->select()->addFields(['*'])->addFrom('table')->addWhere(
     [
