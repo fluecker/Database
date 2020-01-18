@@ -1,7 +1,7 @@
 {
     "name": "fluecker/database",
     "description": "Class to use easy MySql",
-    "version": "v1.2",
+    "version": "v1.2.1",
     "keywords": [
         "database",
         "easy",
