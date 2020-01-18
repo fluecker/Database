@@ -19,33 +19,29 @@ $database = Database::getInstance([
                 'database' => [ //Database config to store the logs into a table
                     'connection_data' => [
                         'main_host' => true, //true use the main connection_data, false use the following connection_data
-                        'host' => 'h2616533.stratoserver.net',
-                        'user' => 'fluecker',
-                        'pass' => '(Domwsib4)',
+                        'host' => '',
+                        'user' => '',
+                        'pass' => '',
                         'prefix' => '',
-                        'database' => 'lieferdev',
+                        'database' => '',
                         'port' => '3306',
                         'charset' => 'utf8',
                         'timezone' => 'Europe/Berlin',
                     ],
                     'table_data' => [
-                        'name' => 'log',
-                        'columns' => [
-                            'l_origin', 'l_state', 'l_remoteAddr', 'l_refer', 'l_browser', 'l_user', 'l_logKind', 'l_path', 'l_class', 'l_method', 'l_queryString', 'l_errorMessage', 'l_create_at'
-                        ],
-                        'values' => [
-                            'testSeite', '1', '0.0.0.0', 'vorherige seite', 'chrome', 'ich', 'mysql', 'hier', 'da', 'die', '[time]', '[message]', date('Y-m-d H:i:s')
-                        ]
+                        'name' => '',
+                        'columns' => [],
+                        'values' => []
                     ],
                 ],
             ]
         ],
         'connection_data' => [
-            'host' => 'h2616533.stratoserver.net',
-            'user' => 'fluecker',
-            'pass' => '(Domwsib4)',
+            'host' => '',
+            'user' => '',
+            'pass' => '',
             'prefix' => '',
-            'database' => 'lieferdev',
+            'database' => '',
             'port' => '3306',
             'charset' => 'utf8',
             'timezone' => 'Europe/Berlin',
