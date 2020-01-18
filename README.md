@@ -161,6 +161,20 @@ $database->execute($query);
 
 For more examples, look into the "example" folder.
 
+## TODO
+
+* create config object
+* change config directly e.g.
+```php
+Database::getInstance()->setConfig('debug', true);
+```
+or
+```php
+$database = Database::getInstance();
+$database->setConfig('debug', true);
+```
+
+
 ## Authors
 
 * **Fabian Lücker** - [f-Luecker](https://www.f-luecker.de)
