@@ -34,12 +34,12 @@ class From extends Statement_Abstract {
                 if(is_array($table) && count($table) > 0){// Tables with aliases
                     $this->setTablesInner($table[0], $table[1]);
                 } else {//multiple tables without aliases
-                    $this->_tables[] = new Field($table);
+                    $this->setFieldTable(new Field($table));
                 }
             }
         } elseif(!is_array($tables) && $tables !== ''){ //if is tables an string
             if($this->validateField($tables)) {
-                $this->_tables[] = new Field($tables);
+                $this->setFieldTable(new Field($tables));
             }
         } else {
             throw new DatabaseStatementExceptions('Table cannot be empty');
@@ -49,12 +49,20 @@ class From extends Statement_Abstract {
     private function setTablesInner(string $table, string $alias){
         if (!is_numeric($table)) {
             if ($this->validateField($table) && $this->validateField($alias)) {
-                $this->_tables[] = new Field($table, $alias);
+                $this->setFieldTable(new Field($table, $alias));
             }
         } else { //only tables
             if ($this->validateField($table)) {
-                $this->_tables[] = new Field($table);
+                $this->setFieldTable(new Field($table));
             }
+        }
+    }
+
+    private function setFieldTable(Field $field){
+        $hash = md5(serialize($field));
+
+        if(!isset($this->_tables[$hash])){
+            $this->_tables[$hash] = $field;
         }
     }
 

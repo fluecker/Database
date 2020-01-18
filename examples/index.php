@@ -8,10 +8,8 @@ include 'config.php';
 //$database->insert()->addValues(['test', 'test\test', 'TestComponente', 0, 0, 999999, 'test underline']);
 
 //Is Working
-$database->select()->addFields(['*'])->addFrom('components')->addWhere([['co_state', 1]]);
-$database->select()->addWhere()->addNotBetween('co_id', 1, 2);
-$database->select()->addWhere()->addNotLike('co_id', 'jfoaisdf%');
-$database->select()->addWhere()->addIsNotNull('co_id');
+$database->select()->addFields(['*'])->addFrom([['components', 'c']])->addWhere([['co_state', 1]]);
+$database->select()->addFields(['*'])->addFrom('components')->addWhere()->addNotBetween('co_id', 1, 2)->addNotLike('co_id', 'jfoaisdf%')->addIsNotNull('co_id');
 
 //$database->select()->addFields(['*'])->addFrom('components')->addWhere([['co_name', 'rest']]);
 

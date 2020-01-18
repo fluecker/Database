@@ -56,13 +56,15 @@ class Fields extends Statement_Abstract {
         if($fields !== null) {
             if (is_array($fields) && count($fields) > 0) {
                 foreach ($fields as $field) {
-                    if ($this->validateField($field)) {
-                        array_push($this->_fields, new Field($field));
+                    $hash = md5($field);
+                    if (!isset($this->_fields[$hash]) && $this->validateField($field)) {
+                        $this->_fields[$hash] = new Field($field);
                     }
                 }
             } elseif (!is_array($fields) && $fields !== '') {
+                $hash = md5((string)$fields);
                 if ($this->validateField((string)$fields)) {
-                    $this->_fields[] = new Field((string)$fields);
+                    $this->_fields[$hash] = new Field((string)$fields);
                 }
             } else {
                 throw new DatabaseStatementExceptions('Field cannot be empty');
