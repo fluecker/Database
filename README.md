@@ -28,7 +28,7 @@ composer require fluecker/database
 ### Configure
 
 Minimum configuration
-```
+```php
 <?php
 Database::getInstance([
         'connection_data' => [
@@ -47,7 +47,7 @@ Database::getInstance([
 
 To log or echo the queries you need to configure more
 
-```
+```php
 <?php
 Database::getInstance([
         'config' => [
@@ -97,7 +97,7 @@ Database::getInstance([
 
 ### Usage
 
-```
+```php
 <?php
 use Database\Database;
 
@@ -109,7 +109,7 @@ The class comes with Singleton functionality
 
 You can use it as variable like this: 
 
-```
+```php
 <?php
 $database = Database::getInstance();
 $database->......
@@ -117,7 +117,7 @@ $database->......
 
 or as Static class like this:
 
-```
+```php
 <?php
 Database::getInstance()->.....
 ```
@@ -125,7 +125,7 @@ Database::getInstance()->.....
 After this you can use the class like the following methods
 
 Simple select
-```
+```php
 <?php
 $database->select()->addFields(['*'])->addFrom('table')->addWhere(
     [
@@ -137,7 +137,7 @@ $database->execute();
 ```
 
 simple update
-```
+```php
 <?php
 $database->update()->addTable('table')->addFields(
     [
@@ -154,7 +154,7 @@ $database->execute();
 ```
 
 If you want to send your query directly to the server you can do it like this
-```
+```php
 <?php
 $database->execute($query);
 ```
