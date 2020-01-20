@@ -38,8 +38,25 @@ composer require fluecker/database
 Minimum configuration
 ```php
 <?php
-Database::getInstance([
-        'connection_data' => [
+Database::getInstance('host', 'username', 'password', 'database');
+
+$database = new Database('host', 'username', 'password', 'database');
+
+$mysql = new mysqli('host', 'username', 'password', 'database');
+$database = new Database($mysql);
+
+Database::getInstance(
+    [ //Main Database Connection
+        'host' => '',
+        'user' => '',
+        'pass' => '',
+        'prefix' => '',
+        'database' => '',
+        'port' => '3306',
+        'charset' => 'utf8',
+        'timezone' => 'Europe/Berlin',
+    ],
+    [ //Log Database Connection
             'host' => '',
             'user' => '',
             'pass' => '',
@@ -48,13 +65,11 @@ Database::getInstance([
             'port' => '3306',
             'charset' => 'utf8',
             'timezone' => 'Europe/Berlin',
-        ]
-    ]
+    ],
 );
 ```
 
-To log or echo the queries you need to configure more
-
+To log or echo the queries you need to configure more (full configuration)
 ```php
 <?php
 Database::getInstance([
@@ -168,20 +183,15 @@ If you want to send your query directly to the server you can do it like this.
 $database->execute($query);
 ```
 
+If you only want to debug the queries
+```php
+<?php
+Database::getInstance()->setDebug(true);
+```
+The queries get build bug do not send to the server.
+The query was printed on the console.
+
 For more examples, look into the "example" folder.
-
-## TODO
-
-* create config object
-* change config directly e.g.
-```php
-Database::getInstance()->setConfig('debug', true);
-```
-or
-```php
-$database = Database::getInstance();
-$database->setConfig('debug', true);
-```
 
 
 ## Authors

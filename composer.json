@@ -1,7 +1,7 @@
 {
     "name": "fluecker/php-database",
     "description": "Class to connect to MySQL Database and to create safe queries",
-    "version": "v1.2.4",
+    "version": "v1.3.0",
     "keywords": [
         "php",
         "database",

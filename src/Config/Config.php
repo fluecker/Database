@@ -132,7 +132,7 @@ class Config extends ObjectAbstract {
         return self::$_instance;
     }
 
-    private function __construct() {}
+    public function __construct() {}
 
     /**
      * @throws DatabaseConfigExceptions
@@ -141,9 +141,6 @@ class Config extends ObjectAbstract {
         foreach($this->_db_validate as $val){
             $function = 'get' . ucfirst($val);
             if(!$this->isDebug() && ($this->getMainConnection()->$function() === null || $this->getMainConnection()->$function() === '')){
-                echo '<pre>';
-                print_r($this);
-                echo '</pre>';
                 throw new DatabaseConfigExceptions('Field "' . $val . '" cannot be empty or null on main connection array', $this->getLog());
             }
 
@@ -173,17 +170,18 @@ class Config extends ObjectAbstract {
     }
 
     /**
-     * @param null $host or Main Connection or mysqli object
-     * @param null $username or Log Connection
-     * @param null $password or common Settings
+     * @param null $host
+     * @param null $username
+     * @param null $password
      * @param null $database
      * @param int $port
      * @param string $charset
-     * @param null $socket
+     * @param string $prefix
+     * @param string $timezone
      * @return Config
      * @throws DatabaseConfigExceptions
      */
-    public static function readConfig($host = null, $username = null, $password = null, $database = null, $port = 3306, $charset = 'utf8', $socket = null){
+    public static function readConfig($host = null, $username = null, $password = null, $database = null, $port = 3306, $charset = 'utf8', $prefix = '', $timezone = ''){
 
         $config = new Config();
 
@@ -290,7 +288,7 @@ class Config extends ObjectAbstract {
         // if come the connection data normal
         if (!is_object($host) && !is_array($host) && $host !== null && !is_array($username) && $username !== null) {
             foreach (func_get_args() as $key => $val) {
-                if ($key < 7) {
+                if ($key < 7 && $val !== null && $val !== '') {
                     $function = 'set';
                     if (is_numeric($key)) {
                         $function .= ucfirst(self::mapNumericToAsso($key));

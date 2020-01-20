@@ -40,9 +40,9 @@ class Database extends Database_Abstract {
 
     protected static $_instance = null;
 
-    public static function getInstance($host = null, $username = null, $password = null, $database = null, $port = '', $charset = '', $socket = null) : Database {
+    public static function getInstance($host = null, $username = null, $password = null, $database = null, $port = null, $charset = '', $prefix = '', $timezone = '') : Database {
 
-        $config = Config::readConfig($host, $username, $password, $database, $port, $charset, $socket);
+        $config = Config::readConfig($host, $username, $password, $database, $port, $charset, $prefix, $timezone);
 
         if (null === self::$_instance) {
             self::$_instance = new self($config);
@@ -50,23 +50,29 @@ class Database extends Database_Abstract {
         return self::$_instance;
     }
 
-    public function setConfig($key, $value){
-        $function = 'set' . ucfirst($key);
-        $this->_config->$function($value);
+    public function setDebug($value){
+        if($value){
+            $this->_config->setDebug(true);
+            $this->_config->getLog()->setEnabled(true);
+            $this->_config->getLog()->setEcho(true);
+        } else {
+            $this->_config->setDebug(false);
+            $this->_config->getLog()->setEnabled(false);
+            $this->_config->getLog()->setEcho(false);
+        }
     }
 
-    public function __construct($host = null, $username = null, $password = null, $database = null, $port = '', $charset = '', $socket = null){
+    public function __construct($host = null, $username = null, $password = null, $database = null, $port = null, $charset = '', $prefix = '', $timezone = ''){
 
         if($host instanceof Config) {
             $this->_config = $host;
         } else {
-
             if($host instanceof \mysqli) {
                 $this->_connection = $host;
-                $host = '';
+                $this->_config = new Config();
+            } else {
+                $this->_config = Config::readConfig($host, $username, $password, $database, $port, $charset, $prefix, $timezone);
             }
-
-            $this->_config = Config::readConfig($host, $username, $password, $database, $port, $charset, $socket);
         }
 
         if($this->_config->isDebug() === false) {
