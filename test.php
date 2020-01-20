@@ -5,10 +5,10 @@ use Database\Database;
 
 $database = new Database(
     [
-        'h2616533.stratoserver.net',
-        'fluecker',
-        '(Domwsib4)',
-        'lieferdev',
+        '',
+        '',
+        '',
+        '',
         'port' => '3306',
         'charset' => 'utf8',
     ],
