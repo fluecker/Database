@@ -1,13 +1,13 @@
 # PHP-Secure-Database-Class
 
 With this class you can easily and quickly build secure database queries and send them to your MySql-Database.
-If required, the queries are logged and / or output directly on the console.
+If required, the queries are logged and / or displayed directly on the console.
 
 ### Support me
 
-This software is developed during my free time and I will be glad if somebody will support me.
+This software is developed during my free time and I will be glad if somebody would like to support me.
 
-Everyone's time should be valuable, so please consider donating.
+Everyone's time is be valuable, so please consider donating.
 
 [Donate with paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=luecker.fabian%40gmail.com&currency_code=EUR&source=url)
 
@@ -127,10 +127,10 @@ use Database\Database;
 require_once 'vendor/autoload.php';
 ```
 
-First you must configure the class. As explained above.
-The class comes with Singleton functionality
+First you have to configure the class as explained above.
+The class contains Singleton functionality
 
-You can use it as variable like this: 
+This way it can be used as variable: 
 
 ```php
 <?php
@@ -138,14 +138,14 @@ $database = Database::getInstance();
 $database->......
 ```
 
-or as Static class like this:
+or as Static class with the following code:
 
 ```php
 <?php
 Database::getInstance()->.....
 ```
 
-After this you can use the class like the following methods
+Here are some examples for using the class with methods
 
 Simple select
 ```php
@@ -176,19 +176,19 @@ $database->update()->addTable('table')->addFields(
 $database->execute();
 ```
 
-If you want to send your query directly to the server you can do it like this. 
+If you want to send your query directly to the server try this approach. 
 !!!Attention this way is not safe!!!
 ```php
 <?php
 $database->execute($query);
 ```
 
-If you only want to debug the queries
+In case your goal is to debug the queries
 ```php
 <?php
 Database::getInstance()->setDebug(true);
 ```
-The queries get build but do not send to the server.
+The queries are being built but will not be send to the server.
 The query was printed on the console.
 
 For more examples, look into the "example" folder.
