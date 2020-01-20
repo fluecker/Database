@@ -1,11 +1,15 @@
 {
-    "name": "fluecker/database",
+    "name": "fluecker/php-database",
     "description": "Class to use easy MySql",
-    "version": "v1.2.2",
+    "version": "v1.2.3",
     "keywords": [
+        "php",
         "database",
         "easy",
-        "queries"
+        "queries",
+        "secure",
+        "mysql",
+        "mariadb"
     ],
     "type": "library",
     "authors": [

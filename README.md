@@ -1,6 +1,6 @@
-# Database
+# PHP-Database
 
-With this class you can easily and quickly build database queries and send them to your database.
+With this class you can easily and quickly build database queries and send them to your MySql-Database.
 If required, the queries are logged and / or output directly on the console.
 
 ### Installing
