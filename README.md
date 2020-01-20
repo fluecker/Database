@@ -9,7 +9,7 @@ Installing with the composer
 
 ```
 "require": {
-    "fluecker/database": "dev-master",
+    "fluecker/database": "dev-master"
 }
 ```
 
