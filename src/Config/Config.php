@@ -1,6 +1,7 @@
 <?php
 namespace Database\Config;
 
+use AbstractClasses\Connection;
 use AbstractClasses\ObjectAbstract;
 use Config\Log;
 use Config\LogConnection;
@@ -48,7 +49,6 @@ class Config extends ObjectAbstract {
         'username',
         'password',
         'database',
-        'port',
     ];
 
     /**
@@ -141,28 +141,31 @@ class Config extends ObjectAbstract {
         foreach($this->_db_validate as $val){
             $function = 'get' . ucfirst($val);
             if(!$this->isDebug() && ($this->getMainConnection()->$function() === null || $this->getMainConnection()->$function() === '')){
-                throw new DatabaseConfigExceptions('Field "' . $val . '" cannot be empty or null on main connection array', $this);
+                echo '<pre>';
+                print_r($this);
+                echo '</pre>';
+                throw new DatabaseConfigExceptions('Field "' . $val . '" cannot be empty or null on main connection array', $this->getLog());
             }
 
             if(($this->getLog()->getLogDestination() == 'all' || $this->getLog()->getLogDestination() == 'database') && !$this->getLog()->isLogUseMainConnection() && ($this->getLog()->getLogConnection()->$function() === null || $this->getLog()->getLogConnection()->$function() === '')){
-                throw new DatabaseConfigExceptions('Field "' . $val . '" cannot be empty or null on log connection array', $this);
+                throw new DatabaseConfigExceptions('Field "' . $val . '" cannot be empty or null on log connection array', $this->getLog());
             }
         }
 
         if(($this->getLog()->getLogDestination() == 'all' || $this->getLog()->getLogDestination() == 'database')){
             if($this->getLog()->getLogConnection() === null){
-                throw new DatabaseConfigExceptions('No log connection found', $this);
+                throw new DatabaseConfigExceptions('No log connection found', $this->getLog());
             } else {
                 if($this->getLog()->getLogConnection()->getLogTableName() === '') {
-                    throw new DatabaseConfigExceptions('Log table name cannot be empty', $this);
+                    throw new DatabaseConfigExceptions('Log table name cannot be empty', $this->getLog());
                 }
 
                 if(count($this->getLog()->getLogConnection()->getLogTableColumns()) == 0 || count($this->getLog()->getLogConnection()->getLogTableValues()) == 0){
-                    throw new DatabaseConfigExceptions('Log table column and value are required values', $this);
+                    throw new DatabaseConfigExceptions('Log table column and value are required values', $this->getLog());
                 }
 
                 if(count($this->getLog()->getLogConnection()->getLogTableValues()) !== count($this->getLog()->getLogConnection()->getLogTableColumns())){
-                    throw new DatabaseConfigExceptions('Log table columns and values must have the same count', $this);
+                    throw new DatabaseConfigExceptions('Log table columns and values must have the same count', $this->getLog());
                 }
             }
 
@@ -226,12 +229,18 @@ class Config extends ObjectAbstract {
                         $config->getLog()->getFile()->setLogFile($host['config']['log']['file']['log_file']);
                     }
 
-                    if (isset($host['config']['log']['database']['use_main_connection'])) {
-                        $config->getLog()->setLogUseMainConnection($host['config']['log']['database']['use_main_connection']);
-                    }
+                    if (isset($host['config']['log']['database']['log_use_main_connection'])) {
+                        $config->getLog()->setLogUseMainConnection($host['config']['log']['database']['log_use_main_connection']);
 
-                    if (isset($host['config']['log']['database']['connection_data'])) {
-                        $config->getLog()->setLogConnection(new LogConnection($host['config']['log']['database']['connection_data']));
+                        if ($host['config']['log']['database']['log_use_main_connection']) {
+                            if (isset($host['connection_data'])) {
+                                $config->getLog()->setLogConnection(new LogConnection($host['connection_data']));
+                            }
+                        } else {
+                            if (isset($host['config']['log']['database']['connection_data'])) {
+                                $config->getLog()->setLogConnection(new LogConnection($host['config']['log']['database']['connection_data']));
+                            }
+                        }
                     }
 
                     if (isset($host['config']['log']['database']['table_data'])) {
@@ -252,6 +261,17 @@ class Config extends ObjectAbstract {
                     $config->setMainConnection(new MainConnection($host['connection_data']));
                 }
             }
+        }
+
+        if($host instanceof Connection){
+            $config->getMainConnection()->setHost($host->getHost());
+            $config->getMainConnection()->setPassword($host->getPassword());
+            $config->getMainConnection()->setUsername($host->getUsername());
+            $config->getMainConnection()->setDatabase($host->getDatabase());
+            $config->getMainConnection()->setCharset($host->getCharset());
+            $config->getMainConnection()->setTimezone($host->getTimezone());
+            $config->getMainConnection()->setPort($host->getPort());
+            $config->getMainConnection()->setPrefix($host->getPrefix());
         }
 
         // if username an array, all log connection params passed over this

@@ -14,7 +14,7 @@ class DatabaseLog {
         }
 
         if ($settings->getLogDestination() == 'database' || $settings->getLogDestination() == 'all') {
-                self::writeLogIntoDatabase($settings, $query, $method, $time);
+            self::writeLogIntoDatabase($settings, $query, $method, $time);
         }
 
         if($settings->isEcho()) {
@@ -23,55 +23,24 @@ class DatabaseLog {
     }
 
     private static function writeLogIntoDatabase(Log $settings, string $query, string $method, ExecutionTime $time = null){
-        if($settings->isLogUseMainConnection()){
+        $database = new Database($settings->getLogConnection());
 
-        }
-        if (!isset($settings['database']['main_host']) || !$settings['database']['main_host']) {
-            if(isset($settings['database']['connection_data'])) {
-                $database = Database::getInstance([
-                        'config' => [
-                            'debug' => false, //true = do not send the Query to server
-                            'timer' => false, //true = save the sql execution time
-                            'log' => [
-                                'enabled' => false, // true = enabled the log functions
-                            ]
-                        ],
-                        'connection_data' => [
-                            'host' => $settings['database']['connection_data']['host'],
-                            'user' => $settings['database']['connection_data']['user'],
-                            'pass' => $settings['database']['connection_data']['pass'],
-                            'prefix' => $settings['database']['connection_data']['prefix'],
-                            'database' => $settings['database']['connection_data']['database'],
-                            'port' => $settings['database']['connection_data']['port'],
-                            'charset' => $settings['database']['connection_data']['charset'],
-                            'timezone' => $settings['database']['connection_data']['timezone'],
-                        ]
-                    ]
-                    , true);
-            } else {
-                throw new DatabaseLogExceptions('Log Database Connection Data settings are missing, add under "config" -> "log" -> "database" -> "connection_data" your MySql Connection Data');
-            }
-        } else {
-            $database = Database::getInstance();
-        }
-
-        foreach ($settings['database']['table_data']['values'] as $key => $value) {
+        foreach ($settings->getLogConnection()->getLogTableValues() as $key => $value) {
             if (strstr($value, '[message]')) {
-                $settings['database']['table_data']['values'][$key] = str_replace('[message]', 'Ausgefuehrte Query: ' . $query, $value);
+                $settings->getLogConnection()->setLogTableValue($key, str_replace('[message]', 'Ausgefuehrte Query: ' . $query, $value));
             }
 
             if (strstr($value, '[time]') && $time !== null) {
-                $settings['database']['table_data']['values'][$key] = str_replace('[time]', $time, $value);
+                $settings->getLogConnection()->setLogTableValue($key, str_replace('[time]', $time, $value));
             }
         }
 
-        $database->insert($method)->addTable($settings['database']['table_data']['name'])->addFields($settings['database']['table_data']['columns'])->addValues($settings['database']['table_data']['values']);
+        $database->insert($method)->addTable($settings->getLogConnection()->getLogTableName())->addFields($settings->getLogConnection()->getLogTableColumns())->addValues($settings->getLogConnection()->getLogTableValues());
         $database->execute();
     }
 
-    private static function writeFileLog(Log $settings, string $query, string $method, ExecutionTime $time = null){
+    private static function writeFileLog(Log $settings, string $query, ?string $method, ExecutionTime $time = null){
         if ($settings->getFile()->getLogPath() !== '' && $settings->getFile()->getLogFile() !== '') {
-
             if(DatabaseFunctions::createFolder($settings->getFile()->getLogPath())) {
                 if (!file_exists($settings->getFile()->getLogPath() . '/' . $settings->getFile()->getLogFile())) {
                     try{
@@ -98,7 +67,7 @@ class DatabaseLog {
         }
     }
 
-    public static function writeErrorLog($message, $settings, $method = null){
-        error_log(date('Y-m-d H:i:s') . ' | ' . ($method !== null && $method !== '' ? $method . ' | ' : '') . $message . PHP_EOL, 3, $settings->getFile()->getLogPath() . '/' . $settings->getFile()->getLogFile());
+    public static function writeErrorLog($message, Log $settings, $method = null){
+        self::writeFileLog($settings, $message, $method);
     }
 }
