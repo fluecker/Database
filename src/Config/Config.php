@@ -1,55 +1,69 @@
 <?php
 namespace Database\Config;
 
+use AbstractClasses\ObjectAbstract;
+use Config\Log;
+use Config\LogConnection;
+use Config\MainConnection;
+use Database\Exceptions\DatabaseConfigExceptions;
 
-use Database\Exceptions\DatabaseExceptions;
+/**
+ * Class Config
+ * @package Database\Config
+ */
+class Config extends ObjectAbstract {
 
-class Config {
-
+    /**
+     * @var null
+     */
     private static $_instance = null;
 
+    /**
+     * @var bool
+     */
     private $_debug = false;
-    private $_log = false;
+    /**
+     * @var bool
+     */
+    private $_log = null;
+    /**
+     * @var bool
+     */
     private $_num_rows = false;
+    /**
+     * @var bool
+     */
     private $_timer = false;
-    private $_log_destination = 'file'; //all, file, database
-    private $_echo = false;
-    private $_log_table_columns = [];
-    private $_log_table_values = [];
-    private $_log_table_name = '';
-    private $_log_file_path = '/Log';
-    private $_log_file_name = 'Query.log';
-    private $_log_use_main_connection = true;
 
-    private $_main_connection = [
-        'host' => null,
-        'user' => null,
-        'pass' => null,
-        'prefix' => null,
-        'database' => null,
-        'port' => null,
-        'charset' => null,
-        'timezone' => null,
-    ];
+    /**
+     * @var null
+     */
+    private $_main_connection = null;
 
-    private $_log_connection = [
-        'host' => null,
-        'user' => null,
-        'pass' => null,
-        'prefix' => null,
-        'database' => null,
-        'port' => null,
-        'charset' => null,
-        'timezone' => null,
-    ];
-
+    /**
+     * @var array
+     */
     private $_db_validate = [
         'host',
-        'user',
-        'pass',
+        'username',
+        'password',
         'database',
         'port',
     ];
+
+    /**
+     * @param bool $debug
+     */
+    public function setDebug(bool $debug): void{
+        $this->_debug = $debug;
+    }
+
+    /**
+     * @param bool $timer
+     */
+    public function setTimer(bool $timer): void{
+        $this->_timer = $timer;
+    }
 
     /**
      * @return bool
@@ -80,150 +94,178 @@ class Config {
     }
 
     /**
-     * @return string
+     * @return null|MainConnection
      */
-    public function getLogDestination(): string {
-        return $this->_log_destination;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEcho(): bool {
-        return $this->_echo;
-    }
-
-    /**
-     * @return array
-     */
-    public function getLogTableColumns(): array {
-        return $this->_log_table_columns;
-    }
-
-    /**
-     * @return array
-     */
-    public function getLogTableValues(): array {
-        return $this->_log_table_values;
-    }
-
-    /**
-     * @param string $key
-     * @param $value
-     */
-    public function setLogTableValues(string $key, $value): void {
-        $this->_log_table_values[$key] = $value;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLogTableName(): string {
-        return $this->_log_table_name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLogFilePath(): string {
-        return $this->_log_file_path;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLogFileName(): string {
-        return $this->_log_file_name;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isLogUseMainConnection(): bool {
-        return $this->_log_use_main_connection;
-    }
-
-    /**
-     * @param string $key
-     * @return string
-     */
-    public function getMainConnection(string $key): string {
-        return $this->_main_connection[$key];
-    }
-
-    /**
-     * @param string|array $key
-     * @return array
-     */
-    public function getLogConnection(string $key = null) {
-        if($key === null){
-            return $this->_log_connection;
-        } else {
-            return $this->_log_connection[$key];
+    public function getMainConnection(): ?MainConnection{
+        if($this->_main_connection === null){
+            $this->_main_connection = new MainConnection();
         }
+
+        return $this->_main_connection;
     }
 
+    /**
+     * @return null|Log
+     */
+    public function getLog(): ?Log{
+        if($this->_log === null){
+            $this->_log = new Log();
+        }
+
+        return $this->_log;
+    }
 
     /**
-     * @param null $settings
      * @return Config
      */
-    public static function getInstance($settings = null) : self{
+    public static function getInstance() : self{
         if (null === self::$_instance) {
-            self::$_instance = new self($settings);
+            self::$_instance = new self();
         }
         return self::$_instance;
     }
 
-    private function __construct(array $settings) {
-        $this->setSettings($settings);
+    private function __construct() {}
+
+    /**
+     * @throws DatabaseConfigExceptions
+     */
+    public function validateConfig(){
+        foreach($this->_db_validate as $val){
+            $function = 'get' . ucfirst($val);
+            if(!$this->isDebug() && ($this->getMainConnection()->$function() === null || $this->getMainConnection()->$function() === '')){
+                throw new DatabaseConfigExceptions('Field "' . $val . '" cannot be empty or null on main connection array', $this);
+            }
+
+            if(($this->getLog()->getLogDestination() == 'all' || $this->getLog()->getLogDestination() == 'database') && !$this->getLog()->isLogUseMainConnection() && ($this->getLog()->getLogConnection()->$function() === null || $this->getLog()->getLogConnection()->$function() === '')){
+                throw new DatabaseConfigExceptions('Field "' . $val . '" cannot be empty or null on log connection array', $this);
+            }
+        }
+
+        if(($this->getLog()->getLogDestination() == 'all' || $this->getLog()->getLogDestination() == 'database')){
+            if($this->getLog()->getLogConnection() === null){
+                throw new DatabaseConfigExceptions('No log connection found', $this);
+            } else {
+                if($this->getLog()->getLogConnection()->getLogTableName() === '') {
+                    throw new DatabaseConfigExceptions('Log table name cannot be empty', $this);
+                }
+
+                if(count($this->getLog()->getLogConnection()->getLogTableColumns()) == 0 || count($this->getLog()->getLogConnection()->getLogTableValues()) == 0){
+                    throw new DatabaseConfigExceptions('Log table column and value are required values', $this);
+                }
+
+                if(count($this->getLog()->getLogConnection()->getLogTableValues()) !== count($this->getLog()->getLogConnection()->getLogTableColumns())){
+                    throw new DatabaseConfigExceptions('Log table columns and values must have the same count', $this);
+                }
+            }
+
+        }
     }
 
     /**
-     * @param array $settings
-     * @throws DatabaseExceptions
+     * @param null $host or Main Connection or mysqli object
+     * @param null $username or Log Connection
+     * @param null $password or common Settings
+     * @param null $database
+     * @param int $port
+     * @param string $charset
+     * @param null $socket
+     * @return Config
+     * @throws DatabaseConfigExceptions
      */
-    private function setSettings(array $settings){
-        foreach($settings as $key => $setting){
+    public static function readConfig($host = null, $username = null, $password = null, $database = null, $port = 3306, $charset = 'utf8', $socket = null){
 
-            $var = '_' . $key;
-            if(is_array($setting)){
-                foreach($setting as $innerKey => $innerSetting){
-                    $this->$var[$innerKey] = $innerSetting;
+        $config = new Config();
+
+        // if host an array, all main connection params passed over this
+        if (is_array($host)) {
+            foreach ($host as $key => $val) {
+                $function = 'set';
+                if(is_numeric($key)){
+                    $function .= ucfirst(self::mapNumericToAsso($key));
+                } else {
+                    $function .= ucfirst($key);
                 }
-            } else {
-                $this->$var = $setting;
+                $config->getMainConnection()->$function($val);
             }
         }
 
-        $this->validateConfig();
+        // if username an array, all log connection params passed over this
+        if (is_array($username)) {
+            foreach ($username as $key => $val) {
+                $function = 'set';
+                if(is_numeric($key)){
+                    $function .= ucfirst(self::mapNumericToAsso($key));
+                } else {
+                    $function .= ucfirst($key);
+                }
+                $config->getLog()->getLogConnection()->$function($val);
+            }
+        }
+
+        // if come the connection data normal
+        if (!is_object($host) && !is_array($host) && $host !== null && !is_array($username) && $username !== null) {
+            foreach (func_get_args() as $key => $val) {
+                if ($key < 7) {
+                    $function = 'set';
+                    if (is_numeric($key)) {
+                        $function .= ucfirst(self::mapNumericToAsso($key));
+                    } else {
+                        $function .= ucfirst($key);
+                    }
+                    $config->getMainConnection()->$function($val);
+                }
+            }
+        }
+
+        if($host === null && $username === null && $password === null && $database === null){
+            $config->setDebug(true);
+            $config->getLog()->setEnabled(true);
+            $config->getLog()->setEcho(true);
+        }
+
+        $config->validateConfig();
+
+        return $config;
     }
 
-    private function validateConfig(){
-        foreach($this->_db_validate as $val){
-            if(!$this->_debug && ($this->_main_connection[$val] === null || $this->_main_connection[$val] === '')){
-                throw new DatabaseExceptions('Field "' . $val . '" cannot be empty or null on main connection array');
+    private static function mapNumericToAsso($key): string {
+        switch($key){
+            case 0:{
+                return 'host';
+                break;
             }
-
-            if(($this->_log_destination == 'all' || $this->_log_destination == 'database') && !$this->_log_use_main_connection && ($this->_log_connection[$val] === null || $this->_log_connection[$val] === '')){
-                throw new DatabaseExceptions('Field "' . $val . '" cannot be empty or null on log connection array');
+            case 1:{
+                return 'username';
+                break;
+            }
+            case 2:{
+                return 'password';
+                break;
+            }
+            case 3:{
+                return 'database';
+                break;
+            }
+            case 4:{
+                return 'port';
+                break;
+            }
+            case 5:{
+                return 'charset';
+                break;
+            }
+            case 6:{
+                return 'prefix';
+                break;
+            }
+            case 7:{
+                return 'timezone';
+                break;
+            }
+            default:{
+                throw new DatabaseConfigExceptions('Unknown key in config', Config::getInstance());
             }
         }
-
-        if(($this->_log_destination == 'all' || $this->_log_destination == 'database')){
-            if($this->_log_table_name === '' || $this->_log_table_name === null) {
-                throw new DatabaseExceptions('Table name cannot be empty');
-            }
-
-            if(count($this->_log_table_columns) == 0 || count($this->_log_table_values) == 0){
-                throw new DatabaseExceptions('Log table column and value are required values');
-            }
-
-            if(count($this->_log_table_values) !== count($this->_log_table_columns)){
-                throw new DatabaseExceptions('Log table columns and values must have the same count');
-            }
-        }
-
-
     }
 }

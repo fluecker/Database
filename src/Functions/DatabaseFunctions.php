@@ -1,6 +1,7 @@
 <?php
 namespace Database\Functions;
 use Database\AbstractClasses\Database_Abstract;
+use Database\Config\Config;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Database;
 use Database\Exceptions\DatabaseStatementExceptions;
@@ -42,15 +43,15 @@ class DatabaseFunctions {
     public static function setCharset(string $set, Database_Abstract $connection) : bool {
         try
         {
-            if($connection->getConnection()) {
+            if($connection->isConnected()) {
                 $connection->getConnection()->set_charset($set);
             } else {
-                throw new NoConnectionExceptions('No Connection');
+                throw new NoConnectionExceptions('No Connection', Config::getInstance()->getLog());
             }
 
             return true;
         } catch(\Exception $ex) {
-            throw new DatabaseExceptions($ex->getMessage());
+            throw new DatabaseExceptions($ex->getMessage(), Config::getInstance()->getLog());
         }
     }
 
@@ -63,7 +64,7 @@ class DatabaseFunctions {
     public static function validateDatabaseData(array $data) : bool {
         foreach($data as $key => $value) {
             if ($data[$key] == '') {
-                throw new DatabaseExceptions('Database ' . $key . ' cannot be empty', 3);
+                throw new DatabaseExceptions('Database ' . $key . ' cannot be empty', Config::getInstance()->getLog());
             }
         }
 
@@ -82,10 +83,10 @@ class DatabaseFunctions {
             if($connection->getConnection()) {
                 $connection->getConnection()->select_db(self::clearString($db, $connection));
             } else {
-                throw new NoConnectionExceptions('No Connection');
+                throw new NoConnectionExceptions('No Connection', Config::getInstance()->getLog());
             }
         } catch(\Exception $ex) {
-            throw new DatabaseExceptions($ex->getMessage());
+            throw new DatabaseExceptions($ex->getMessage(), Config::getInstance()->getLog());
         }
 
         return false;
@@ -101,7 +102,7 @@ class DatabaseFunctions {
         if($connection->getConnection()) {
             return $connection->getConnection()->insert_id;
         } else {
-            throw new NoConnectionExceptions('No Connection');
+            throw new NoConnectionExceptions('No Connection', Config::getInstance()->getLog());
         }
     }
 
@@ -117,7 +118,7 @@ class DatabaseFunctions {
                 return $connection->getResult()->num_rows;
             }
         } else {
-            throw new NoConnectionExceptions('No Connection');
+            throw new NoConnectionExceptions('No Connection', Config::getInstance()->getLog());
         }
 
         return false;
@@ -135,7 +136,7 @@ class DatabaseFunctions {
                 return $connection->getResult()->affected_rows;
             }
         } else {
-            throw new NoConnectionExceptions('No Connection');
+            throw new NoConnectionExceptions('No Connection', Config::getInstance()->getLog());
         }
 
         return false;
@@ -152,7 +153,7 @@ class DatabaseFunctions {
         if($connection->getConnection()) {
             self::selectDatabase($db, $connection);
         } else {
-            throw new NoConnectionExceptions('No Connection');
+            throw new NoConnectionExceptions('No Connection', Config::getInstance()->getLog());
         }
 
         return false;
@@ -195,7 +196,7 @@ class DatabaseFunctions {
      */
     public static function validateField(string $field){
         if($field == '') {
-            throw new DatabaseStatementExceptions('Field cannot be empty');
+            throw new DatabaseStatementExceptions('Field cannot be empty', Config::getInstance()->getLog());
         }
 
         return true;
@@ -208,7 +209,7 @@ class DatabaseFunctions {
     public static function createFolder(string $path, $rights = 0777): bool {
         if ($path !== '' && !file_exists($path)){
             if(!mkdir($path, $rights)){
-                throw new DatabaseExceptions('Cannot create the folder ' . $path);
+                throw new DatabaseExceptions('Cannot create the folder ' . $path, Config::getInstance()->getLog());
             }
         }
 

@@ -1,6 +1,7 @@
 <?php
 namespace Database;
 use Database\AbstractClasses\Database_Abstract;
+use Database\Config\Config;
 use Database\Exceptions\NoConnectionExceptions;
 use Database\Functions\DatabaseFunctions;
 use Database\Parts\Delete;
@@ -11,24 +12,23 @@ use Database\Statements\Union;
 
 /**
  * Class Database
- * @author Fabian Lücker
- * @copyright 2014
- * @version 2.0
- * @package fablueck/database
- * @package Database
+ * @package     fablueck/php-database
+ * @category    Database Access and secure query-builder
+ * @author      Fabian Lücker <fabian@f-luecker.de>
+ * @copyright   2014 - 2020
+ * @version     1.2.3
+ * @link        https://github.com/fluecker/Database
+ * @license     MIT
  */
 class Database extends Database_Abstract {
     protected $db_link = '';
     protected $_function = [];
-    protected $_isLog = false;
-    protected $_logPath = '';
-    protected $_isTimer = false;
-    protected $_isDebug = false;
     protected $_method = null;
     protected $_funcname = '';
     protected static $_function_index = -1;
     private $_new_query = true;
     protected $_last_query = '';
+    protected $_config = null;
 
     /**
      * @return string
@@ -40,48 +40,43 @@ class Database extends Database_Abstract {
 
     protected static $_instance = null;
 
-    /**
-     * @param null $settings
-     * @param bool|null $new
-     * @return Database
-     * @throws NoConnectionExceptions
-     */
-    public static function getInstance($settings = null, $new = false) : Database{
-        if(!$new) {
-            if (null === self::$_instance || $settings !== null) {
-                self::$_instance = new self($settings);
-            }
-            return self::$_instance;
+    public static function getInstance($host = null, $username = null, $password = null, $database = null, $port = '', $charset = '', $socket = null) : Database {
+
+        $config = Config::readConfig($host, $username, $password, $database, $port, $charset, $socket);
+
+        if (null === self::$_instance) {
+            self::$_instance = new self($config);
+        }
+        return self::$_instance;
+    }
+
+    public function setConfig($key, $value){
+        $function = 'set' . ucfirst($key);
+        $this->_config->$function($value);
+    }
+
+    public function __construct($host = null, $username = null, $password = null, $database = null, $port = '', $charset = '', $socket = null){
+
+        if($host instanceof Config) {
+            $this->_config = $host;
         } else {
-            return new self($settings);
-        }
-    }
 
-    /**
-     * Database constructor.
-     * @param array $settings
-     * @throws Exceptions\DatabaseExceptions
-     * @throws NoConnectionExceptions
-     */
-    private function __construct(array $settings){
-        if(isset($settings['config'])) {
-            $this->setConfig($settings['config']);
+            if($host instanceof \mysqli) {
+                $this->_connection = $host;
+                $host = '';
+            }
+
+            $this->_config = Config::readConfig($host, $username, $password, $database, $port, $charset, $socket);
         }
 
-        if($this->_isDebug === false) {
-            if ($this->setConnection($settings['connection_data'])) {
-                DatabaseFunctions::selectDatabase($settings['connection_data']['database'], $this);
-                DatabaseFunctions::setCharset($settings['connection_data']['charset'], $this);
+        if($this->_config->isDebug() === false) {
+            if ($this->setConnection($this->_config->getMainConnection())) {
+                DatabaseFunctions::selectDatabase($this->_config->getMainConnection()->getDatabase(), $this);
+                DatabaseFunctions::setCharset($this->_config->getMainConnection()->getCharset(), $this);
             } else {
-                throw new NoConnectionExceptions('No Connection');
+                throw new NoConnectionExceptions('No Connection', $this->_config);
             }
         }
-    }
-
-    private function setConfig(array $config){
-        $this->_isDebug = isset($config['debug']) ? $config['debug'] : false;
-        $this->_isTimer = isset($config['timer']) ? $config['timer'] : false;
-        $this->_isLog = $config['log'];
     }
 
     public function getResult() :\mysqli_result{

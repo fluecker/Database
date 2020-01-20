@@ -1,7 +1,15 @@
-# PHP-Database
+# PHP-Secure-Database-Class
 
-With this class you can easily and quickly build database queries and send them to your MySql-Database.
+With this class you can easily and quickly build secure database queries and send them to your MySql-Database.
 If required, the queries are logged and / or output directly on the console.
+
+### Support me
+
+This software is developed during my free time and I will be glad if somebody will support me.
+
+Everyone's time should be valuable, so please consider donating.
+
+[Donate with paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=luecker.fabian%40gmail.com&currency_code=EUR&source=url)
 
 ### Installing
 
@@ -153,7 +161,8 @@ $database->update()->addTable('table')->addFields(
 $database->execute();
 ```
 
-If you want to send your query directly to the server you can do it like this
+If you want to send your query directly to the server you can do it like this. 
+!!!Attention this way is not safe!!!
 ```php
 <?php
 $database->execute($query);

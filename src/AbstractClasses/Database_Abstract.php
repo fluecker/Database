@@ -1,13 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Fabian
- * Date: 15.03.2019
- * Time: 17:27
- */
-
 namespace Database\AbstractClasses;
 
+use Config\MainConnection;
+use Database\Exceptions\DatabaseConnectionExceptions;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Exceptions\DatabaseQueryException;
 use Database\Exceptions\NoConnectionExceptions;
@@ -15,20 +10,54 @@ use Database\Functions\DatabaseFunctions;
 use Database\Functions\DatabaseLog;
 use Database\Functions\ExecutionTime;
 
+/**
+ * Class Database_Abstract
+ * @package Database\AbstractClasses
+ */
 abstract class Database_Abstract {
+    /**
+     * @var null
+     */
     protected $_function = null;
+    /**
+     * @var null
+     */
     protected $_where = null;
+    /**
+     * @var null
+     */
     protected $_order = null;
+    /**
+     * @var null
+     */
     protected $_group = null;
+    /**
+     * @var null
+     */
     protected $_join = null;
+    /**
+     * @var null
+     */
     protected $_fields = null;
+    /**
+     * @var null|\mysqli
+     */
     protected $_connection = null;
+    /**
+     * @var null
+     */
     protected $_result = null;
-    protected $_isLog = [];
-    protected $_isDebug = null;
-    protected $_isTimer = null;
+    /**
+     * @var null
+     */
     protected $_method = null;
+    /**
+     * @var string
+     */
     protected $_last_query = '';
+    /**
+     * @var string
+     */
     protected $_funcname = '';
 
     /**
@@ -90,40 +119,51 @@ abstract class Database_Abstract {
     /**
      * @return null
      */
-    public function getConnection()
-    {
+    public function getConnection() {
         return $this->_connection;
     }
 
+    /**
+     * @return bool
+     */
+    public function isConnected() {
+        if($this->_connection->connect_errno) {
+            return false;
+        }
+
+        return true;
+    }
 
     /**
-     * @param array $settings
+     * @param MainConnection $settings
      * @return bool
-     * @throws DatabaseExceptions
+     * @throws DatabaseConnectionExceptions
      */
-    protected function setConnection(array $settings) : bool {
+    protected function setConnection(MainConnection $settings) : bool {
         try {
-            $this->_connection = new \mysqli($settings['host'], $settings['user'], $settings['pass'], $settings['database'], $settings['port']);
-
-            if(!$this->_connection) {
-                throw new NoConnectionExceptions('No Connection', $this->_isLog);
+            if($this->_connection === null) {
+                $this->_connection = new \mysqli($settings->getHost(), $settings->getUsername(), $settings->getPassword(), $settings->getDatabase(), $settings->getPort());
             }
 
-            if(isset($settings['charset']) && $settings['charset'] !== ''){
-                DatabaseFunctions::setCharset($settings['charset'], $this);
+            if($this->_connection->connect_errno) {
+                throw new NoConnectionExceptions('No Connection', $this->_config->getLog());
+            }
+
+            if($settings->getCharset() !== ''){
+                DatabaseFunctions::setCharset($settings->getCharset(), $this);
             }
 
             $this->_connection->query("SET lc_time_names = 'de_DE'");
 
             return true;
         } catch(\Exception $ex) {
-            throw new DatabaseExceptions($this->_connection->error, $this->_isLog);
+            throw new DatabaseConnectionExceptions($this->_connection->error, $this->_config->getLog());
         }
     }
 
     /**
      * @param string|null $query
-     * @return array|null|bool
+     * @return array|bool|object|null
      * @throws DatabaseExceptions
      * @throws DatabaseQueryException
      * @throws NoConnectionExceptions
@@ -136,32 +176,32 @@ abstract class Database_Abstract {
             $query = $this->createQuery();
         }
 
-        if ($this->_connection || $this->_isDebug) {
+        if ($this->_connection || $this->_config->isDebug()) {
 
-            if($this->_isTimer){ //Set start time
+            if($this->_config->isTimer()){ //Set start time
                 $executionTime = new ExecutionTime();
                 $executionTime->start();
             }
 
-            if(!$this->_isDebug) {
+            if(!$this->_config->isDebug()) {
                  $this->_result = $this->_connection->query($query); //execute query
             }
 
-            if($this->_isTimer){ //Set start time
+            if($this->_config->isTimer()){ //Set start time
                 $executionTime->end();
             }
 
             $this->_function = [];
 
-            //if database log is active, log all querys
-            if(isset($this->_isLog['enabled']) && $this->_isLog['enabled']){
-                DatabaseLog::add($query, $this->_isLog, $this->_method, $executionTime);
+            //if database log is active, log all queries
+            if($this->_config->getLog()->isEnabled()){
+                DatabaseLog::add($query, $this->_config->getLog(), $this->_method, $executionTime);
             }
         } else {
-            throw new NoConnectionExceptions('No Connection', $this->_isLog);
+            throw new NoConnectionExceptions('No Connection', $this->_config->getLog());
         }
 
-        if(!$this->_isDebug) {
+        if(!$this->_config->isDebug()) {
             if ($this->_result) {
                 if($this->_funcname === 'Select') {
                     $this->_funcname = '';
@@ -171,7 +211,7 @@ abstract class Database_Abstract {
                     return true;
                 }
             } else {
-                throw new DatabaseQueryException($this->_connection->error, $this->_isLog);
+                throw new DatabaseQueryException($this->_connection->error, $this->_config->getLog());
             }
         } else {
             $this->_funcname = '';
@@ -203,10 +243,10 @@ abstract class Database_Abstract {
             if($result) {
                 return $this->prepareResult($result);
             } else {
-                throw new DatabaseExceptions('Es ist ein Fehler im Datanbank Result aufgetreten.', $this->_isLog);
+                throw new DatabaseExceptions('Es ist ein Fehler im Datanbank Result aufgetreten.', $this->_config->getLog());
             }
         } else {
-            throw new NoConnectionExceptions('No Connection', $this->_isLog);
+            throw new NoConnectionExceptions('No Connection', $this->_config->getLog());
         }
     }
 
@@ -236,7 +276,7 @@ abstract class Database_Abstract {
         if($this->_connection) {
             $this->_connection->close();
         } else {
-            throw new NoConnectionExceptions('No Connection', $this->_isLog);
+            throw new NoConnectionExceptions('No Connection', $this->_config->getLog());
         }
     }
 }

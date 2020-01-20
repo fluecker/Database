@@ -1,33 +1,31 @@
 <?php
 namespace Database\Functions;
 
+use Config\Log;
 use Database\Database;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Exceptions\DatabaseLogExceptions;
 
 class DatabaseLog {
-    public static function add(string $query, array $settings, string $method = null, $time = null) {
+    public static function add(string $query, Log $settings, string $method = null, $time = null) {
 
-        if(isset($settings['destination'])) {
-            if ($settings['destination'] == 'file' || $settings['destination'] == 'all') {
-                self::writeFileLog($settings, $query, $method, $time);
-            }
-
-            if ($settings['destination'] == 'database' || $settings['destination'] == 'all') {
-                if(isset($settings['database'])) {
-                    self::writeLogIntoDatabase($settings, $query, $method, $time);
-                } else {
-                    throw new DatabaseLogExceptions('Log Database settings are missing, add under "config" -> "log" -> "database" your MySql Connection Data');
-                }
-            }
+        if ($settings->getLogDestination() == 'file' || $settings->getLogDestination() == 'all') {
+            self::writeFileLog($settings, $query, $method, $time);
         }
 
-        if(isset($settings['echo']) && $settings['echo']) {
+        if ($settings->getLogDestination() == 'database' || $settings->getLogDestination() == 'all') {
+                self::writeLogIntoDatabase($settings, $query, $method, $time);
+        }
+
+        if($settings->isEcho()) {
             self::echoQuery($query, $time, true);
         }
     }
 
-    private static function writeLogIntoDatabase(array $settings, string $query, string $method, ExecutionTime $time = null){
+    private static function writeLogIntoDatabase(Log $settings, string $query, string $method, ExecutionTime $time = null){
+        if($settings->isLogUseMainConnection()){
+
+        }
         if (!isset($settings['database']['main_host']) || !$settings['database']['main_host']) {
             if(isset($settings['database']['connection_data'])) {
                 $database = Database::getInstance([
@@ -71,24 +69,24 @@ class DatabaseLog {
         $database->execute();
     }
 
-    private static function writeFileLog(array $settings, string $query, string $method, ExecutionTime $time = null){
-        if (isset($settings['file']['log_path']) && $settings['file']['log_path'] !== '' && isset($settings['file']['log_file']) && $settings['file']['log_file'] !== '') {
+    private static function writeFileLog(Log $settings, string $query, string $method, ExecutionTime $time = null){
+        if ($settings->getFile()->getLogPath() !== '' && $settings->getFile()->getLogFile() !== '') {
 
-            if(DatabaseFunctions::createFolder($settings['file']['log_path'])) {
-                if (!file_exists($settings['file']['log_path'] . '/' . $settings['file']['log_file'])) {
+            if(DatabaseFunctions::createFolder($settings->getFile()->getLogPath())) {
+                if (!file_exists($settings->getFile()->getLogPath() . '/' . $settings->getFile()->getLogFile())) {
                     try{
-                        touch($settings['file']['log_path']);
+                        touch($settings->getFile()->getLogPath());
                     } catch(\Exception $ex){
-                        throw new DatabaseLogExceptions($ex->getMessage());
+                        throw new DatabaseLogExceptions($ex->getMessage(), $settings);
                     }
                 }
 
-                error_log(date('Y-m-d H:i:s') . ' | ' . ($time !== null ? $time . ' | ' : '') . ($method !== null && $method !== '' ? $method . ' | ' : '') . $query . PHP_EOL, 3, $settings['file']['log_path'] . '/' . $settings['file']['log_file']);
+                error_log(date('Y-m-d H:i:s') . ' | ' . ($time !== null ? $time . ' | ' : '') . ($method !== null && $method !== '' ? $method . ' | ' : '') . $query . PHP_EOL, 3, $settings->getFile()->getLogPath() . '/' . $settings->getFile()->getLogFile());
             } else {
-                throw new DatabaseLogExceptions('No logfile path');
+                throw new DatabaseLogExceptions('No logfile path', $settings);
             }
         } else {
-            throw new DatabaseExceptions('Attribute "log_path" or "log_file" is missing or empty');
+            throw new DatabaseExceptions('Attribute "log_path" or "log_file" is missing or empty', $settings);
         }
     }
 
@@ -101,6 +99,6 @@ class DatabaseLog {
     }
 
     public static function writeErrorLog($message, $settings, $method = null){
-        error_log(date('Y-m-d H:i:s') . ' | ' . ($method !== null && $method !== '' ? $method . ' | ' : '') . $message . PHP_EOL, 3, $settings['file']['log_path'] . '/' . $settings['file']['log_file']);
+        error_log(date('Y-m-d H:i:s') . ' | ' . ($method !== null && $method !== '' ? $method . ' | ' : '') . $message . PHP_EOL, 3, $settings->getFile()->getLogPath() . '/' . $settings->getFile()->getLogFile());
     }
 }
