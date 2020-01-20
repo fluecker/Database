@@ -138,4 +138,13 @@ abstract class Connection extends ObjectAbstract {
     {
         $this->_timezone = $timezone;
     }
+
+    public function __construct($data = null) {
+        if($data !== null) {
+            foreach ($data as $key => $value) {
+                $prop = '_' . $key;
+                $this->$prop = $value;
+            }
+        }
+    }
 }

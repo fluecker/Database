@@ -17,8 +17,8 @@ $database = Database::getInstance([
                     'log_file' => 'Query.log', // Path for file log
                 ],
                 'database' => [ //Database config to store the logs into a table
+                    'use_main_connection' => true,
                     'connection_data' => [
-                        'main_host' => true, //true use the main connection_data, false use the following connection_data
                         'host' => '',
                         'user' => '',
                         'pass' => '',

@@ -94,6 +94,13 @@ class Config extends ObjectAbstract {
     }
 
     /**
+     * @param null $main_connection
+     */
+    public function setMainConnection($main_connection): void{
+        $this->_main_connection = $main_connection;
+    }
+
+    /**
      * @return null|MainConnection
      */
     public function getMainConnection(): ?MainConnection{
@@ -179,14 +186,71 @@ class Config extends ObjectAbstract {
 
         // if host an array, all main connection params passed over this
         if (is_array($host)) {
-            foreach ($host as $key => $val) {
-                $function = 'set';
-                if(is_numeric($key)){
-                    $function .= ucfirst(self::mapNumericToAsso($key));
-                } else {
-                    $function .= ucfirst($key);
+            if(!isset($host['config']) && !isset($host['connection_data'])) {
+                foreach ($host as $key => $val) {
+                    $function = 'set';
+                    if (is_numeric($key)) {
+                        $function .= ucfirst(self::mapNumericToAsso($key));
+                    } else {
+                        $function .= ucfirst($key);
+                    }
+                    $config->getMainConnection()->$function($val);
                 }
-                $config->getMainConnection()->$function($val);
+            } else {
+                if (isset($host['config'])) {
+                    if (isset($host['config']['debug'])) {
+                        $config->setDebug($host['config']['debug']);
+                    }
+
+                    if (isset($host['config']['timer'])) {
+                        $config->setTimer($host['config']['timer']);
+                    }
+
+                    if (isset($host['config']['log']['enabled'])) {
+                        $config->getLog()->setEnabled($host['config']['log']['enabled']);
+                    }
+
+                    if (isset($host['config']['log']['destination'])) {
+                        $config->getLog()->setLogDestination($host['config']['log']['destination']);
+                    }
+
+                    if (isset($host['config']['log']['echo'])) {
+                        $config->getLog()->setEcho($host['config']['log']['echo']);
+                    }
+
+                    if (isset($host['config']['log']['file']['log_path'])) {
+                        $config->getLog()->getFile()->setLogPath($host['config']['log']['file']['log_path']);
+                    }
+
+                    if (isset($host['config']['log']['file']['log_file'])) {
+                        $config->getLog()->getFile()->setLogFile($host['config']['log']['file']['log_file']);
+                    }
+
+                    if (isset($host['config']['log']['database']['use_main_connection'])) {
+                        $config->getLog()->setLogUseMainConnection($host['config']['log']['database']['use_main_connection']);
+                    }
+
+                    if (isset($host['config']['log']['database']['connection_data'])) {
+                        $config->getLog()->setLogConnection(new LogConnection($host['config']['log']['database']['connection_data']));
+                    }
+
+                    if (isset($host['config']['log']['database']['table_data'])) {
+                        if (isset($host['config']['log']['database']['table_data']['name'])) {
+                            $config->getLog()->getLogConnection()->setLogTableName($host['config']['log']['database']['table_data']['name']);
+                        }
+
+                        if (isset($host['config']['log']['database']['table_data']['columns'])) {
+                            $config->getLog()->getLogConnection()->setLogTableColumns($host['config']['log']['database']['table_data']['columns']);
+                        }
+
+                        if (isset($host['config']['log']['database']['table_data']['values'])) {
+                            $config->getLog()->getLogConnection()->setLogTableValues($host['config']['log']['database']['table_data']['values']);
+                        }
+                    }
+                }
+                if(isset($host['connection_data'])) {
+                    $config->setMainConnection(new MainConnection($host['connection_data']));
+                }
             }
         }
 
