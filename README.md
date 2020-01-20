@@ -188,7 +188,7 @@ If you only want to debug the queries
 <?php
 Database::getInstance()->setDebug(true);
 ```
-The queries get build bug do not send to the server.
+The queries get build but do not send to the server.
 The query was printed on the console.
 
 For more examples, look into the "example" folder.
