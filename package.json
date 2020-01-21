@@ -1,0 +1,27 @@
+{
+  "name": "php_secure_database",
+  "description": "Class to connect to MySQL Database and to create safe queries",
+  "version": "v1.3.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fluecker/Database.git"
+  },
+  "keywords": [
+    "php",
+    "database",
+    "easy",
+    "query-builder",
+    "queries",
+    "secure",
+    "mysql",
+    "mariadb"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fluecker/Database/issues"
+  },
+  "homepage": "https://github.com/fluecker/Database",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
+}
