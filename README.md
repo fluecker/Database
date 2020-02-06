@@ -9,7 +9,7 @@ This software is developed during my free time and I will be glad if somebody wo
 
 Everyone's time is be valuable, so please consider donating.
 
-[Donate with paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=luecker.fabian%40gmail.com&currency_code=EUR&source=url)
+[Donate with paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LGW8HR48R8596&source=url)
 
 ### Installing
 
