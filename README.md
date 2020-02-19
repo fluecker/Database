@@ -196,7 +196,7 @@ For more examples, look into the "example" folder.
 
 ## Authors
 
-* **Fabian Lücker** - [PHP Schmiede](https://www.php-schmiede.come)
+* **Fabian Lücker** - [PHP Schmiede](https://www.php-schmiede.com)
 
 ## License
 
