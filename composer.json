@@ -16,9 +16,9 @@
     "authors": [
         {
             "name": "Fabian Lücker",
-            "email": "fabian@f-luecker.de",
+            "email": "fabian@php-schmiede.com",
             "role": "Developer",
-            "homepage": "https://www.f-luecker.de/"
+            "homepage": "https://www.php-schmiede.com/"
         }
     ],
     "license": "MIT",

@@ -14,7 +14,7 @@ use Database\Statements\Union;
  * Class Database
  * @package     fablueck/php-database
  * @category    Database Access and secure query-builder
- * @author      Fabian Lücker <fabian@f-luecker.de>
+ * @author      Fabian Lücker <fabian@php-schmiede.com>
  * @copyright   2014 - 2020
  * @version     1.2.3
  * @link        https://github.com/fluecker/Database
