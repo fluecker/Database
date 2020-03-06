@@ -2,6 +2,7 @@
 namespace Database\Statements\Fields\Functions;
 
 
+use Database\Config\Config;
 use Database\Exceptions\DatabaseStatementExceptions;
 use Database\Parts\Select;
 use Database\Statements\Basic\Alias;
@@ -18,7 +19,7 @@ class SubSelect extends Select {
         if($alias !== null){
             $this->_alias = new Alias($alias);
         } else {
-            throw new DatabaseStatementExceptions('Field cannot be empty');
+            throw new DatabaseStatementExceptions('Field cannot be empty', Config::getInstance()->getLog());
         }
     }
 

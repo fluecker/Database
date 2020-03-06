@@ -2,6 +2,7 @@
 namespace Database\Statements\Basic;
 
 use Database\AbstractClasses\Basic_Abstract;
+use Database\Config\Config;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Functions\DatabaseFunctions;
 
@@ -19,7 +20,7 @@ class Field extends Basic_Abstract {
     public function __construct(string $name, string $alias = null){
         parent::__construct($alias);
         if(empty($name) || $name === ''){
-            throw new DatabaseExceptions('Column cannot be empty');
+            throw new DatabaseExceptions('Column cannot be empty', Config::getInstance()->getLog());
         } else {
 
             if(DatabaseFunctions::allowedMysqlFunction($name)){

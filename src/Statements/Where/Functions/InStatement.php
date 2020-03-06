@@ -3,6 +3,7 @@ namespace Database\Statements\Where\Functions;
 
 
 use Database\AbstractClasses\Statement_Abstract;
+use Database\Config\Config;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Parts\Select;
 use Database\Statements\Basic\Field;
@@ -61,7 +62,7 @@ class InStatement extends Statement_Abstract {
                 return $this->_select;
             }
         } else {
-            throw new DatabaseExceptions('Values already been set');
+            throw new DatabaseExceptions('Values already been set', Config::getInstance()->getLog());
         }
     }
 

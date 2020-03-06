@@ -3,6 +3,7 @@ namespace Database\Statements\Fields;
 
 
 use Database\AbstractClasses\Statement_Abstract;
+use Database\Config\Config;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Exceptions\DatabaseStatementExceptions;
 use Database\Statements\Basic\AddDate;
@@ -11,6 +12,7 @@ use Database\Statements\Basic\Field;
 use Database\Statements\Basic\Max;
 use Database\Statements\Basic\Min;
 use Database\Statements\Fields\Functions\SubSelect;
+use Statements\Cases\Cases;
 
 /**
  * Class Fields
@@ -67,11 +69,28 @@ class Fields extends Statement_Abstract {
                     $this->_fields[$hash] = new Field((string)$fields);
                 }
             } else {
-                throw new DatabaseStatementExceptions('Field cannot be empty');
+                throw new DatabaseStatementExceptions('Field cannot be empty', Config::getInstance()->getLog());
             }
         }
 
         return $this;
+    }
+
+    /**
+     * @param array|null $_when
+     * @param string|null $_field
+     * @param string|null $_else
+     * @return $this|Cases
+     * @throws DatabaseExceptions
+     */
+    public function addCase(?array $_when = null, ?string $_field = null, ?string $_else = null){
+        if($_when !== null || $_field !== null || $_else !== null) {
+            $this->_fields[] = new Cases($_when, $_field, $_else);
+            return $this;
+        } else {
+            $this->_fields[] = new Cases($_when, $_field, $_else);
+            return end($this->_fields);
+        }
     }
 
     /**
@@ -99,7 +118,7 @@ class Fields extends Statement_Abstract {
                 break;
             }
             default:{
-                throw new DatabaseExceptions('Call undefined function: ' . $name);
+                throw new DatabaseExceptions('Call undefined function: ' . $name, Config::getInstance()->getLog());
                 break;
             }
         }

@@ -2,6 +2,7 @@
 namespace Database\AbstractClasses;
 
 
+use Database\Config\Config;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Statements\Basic\AddDate;
 use Database\Statements\Basic\Date;
@@ -26,7 +27,7 @@ abstract class Where_Abstract {
                 break;
             }
             default:{
-                throw new DatabaseExceptions('Call undefined function: ' . $name, []);
+                throw new DatabaseExceptions('Call undefined function: ' . $name, Config::getInstance()->getLog());
             }
         }
         return $this;

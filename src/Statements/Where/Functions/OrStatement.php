@@ -22,7 +22,6 @@ class OrStatement extends Statement_Abstract {
     /**
      * OrStatement constructor.
      * @param array|null $statement
-     * @throws \Exceptions\DatabaseExceptions
      */
     public function __construct(array $statement = null) {
         if($statement !== null) {
@@ -33,7 +32,7 @@ class OrStatement extends Statement_Abstract {
 
     /**
      * @param array $statement
-     * @throws \Exceptions\DatabaseExceptions
+     * @throws \Database\Exceptions\DatabaseExceptions
      */
     public function setOrStatement(array $statement){
         foreach ($statement as $stateInner) {

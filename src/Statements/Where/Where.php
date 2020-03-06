@@ -3,14 +3,18 @@ namespace Database\Statements\Where;
 
 
 use Database\AbstractClasses\Statement_Abstract;
+use Database\Config\Config;
+use Database\Exceptions\DatabaseExceptions;
 use Database\Exceptions\DatabaseStatementExceptions;
 use Database\Functions\DatabaseFunctions;
 use Database\Statements\Basic\Separator;
+use Database\Statements\Fields\Fields;
 use Database\Statements\Where\Functions\ColumnStatement;
 use Database\Statements\Where\Functions\CommonStatement;
 use Database\Statements\Where\Functions\InStatement;
 use Database\Statements\Where\Functions\OrStatement;
 use Database\Statements\Where\Functions\SubSelectWhere;
+use Statements\Cases\Cases;
 
 /**
  * Class Where
@@ -52,11 +56,11 @@ class Where extends Statement_Abstract
                     if ($wh[0] !== '') {
                         $this->_collection[] = new CommonStatement($wh[0], $wh[1], isset($wh[2]) ? $wh[2] : null);
                     } else {
-                        throw new DatabaseStatementExceptions('Column cannot be empty');
+                        throw new DatabaseStatementExceptions('Column cannot be empty', Config::getInstance()->getLog());
                     }
                 }
             } else {
-                throw new DatabaseStatementExceptions('Where cannot be empty');
+                throw new DatabaseStatementExceptions('Where cannot be empty', Config::getInstance()->getLog());
             }
         } else {
             foreach ($where as $key => $wh) {
@@ -80,6 +84,23 @@ class Where extends Statement_Abstract
                 $this->_collection[] = new OrStatement();
                 return end($this->_collection);
             }
+        }
+    }
+
+    /**
+     * @param array|null $_when
+     * @param string|null $_field
+     * @param string|null $_else
+     * @return $this|Cases
+     * @throws DatabaseExceptions
+     */
+    public function addCase(?array $_when = null, ?string $_field = null, ?string $_else = null){
+        if($_when !== null || $_field !== null || $_else !== null) {
+            $this->_collection[] = new Cases($_when, $_field, $_else);
+            return $this;
+        } else {
+            $this->_collection[] = new Cases($_when, $_field, $_else);
+            return end($this->_collection);
         }
     }
 

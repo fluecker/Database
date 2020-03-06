@@ -33,7 +33,7 @@ class CommonStatement extends Where_Abstract
      * @param string|null $function
      * @throws \Database\Exceptions\DatabaseExceptions
      */
-    public function __construct(string $column, ?string $value, string $separator = null, string $function = null) {
+    public function __construct(string $column, ?string $value, string $separator = null, ?string $function = null) {
 
         if($function !== null){
             $this->$function($column);

@@ -2,6 +2,7 @@
 namespace Database\Statements\Basic;
 
 
+use Database\Config\Config;
 use Database\Exceptions\DatabaseExceptions;
 
 class Interval
@@ -10,7 +11,7 @@ class Interval
 
     public function __construct(string $interval){
         if($interval === ''){
-            throw new DatabaseExceptions('Interval cannot be empty');
+            throw new DatabaseExceptions('Interval cannot be empty', Config::getInstance()->getLog());
         } else {
             $this->_value = $interval;
         }

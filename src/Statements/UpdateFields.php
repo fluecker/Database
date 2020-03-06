@@ -2,6 +2,7 @@
 namespace Database\Statements;
 
 use Database\AbstractClasses\Statement_Abstract;
+use Database\Config\Config;
 use Database\Exceptions\DatabaseStatementExceptions;
 use Database\Functions\DatabaseFunctions;
 use Database\Statements\Basic\Field;
@@ -37,7 +38,7 @@ class UpdateFields extends Statement_Abstract {
                 $this->_update_fields[] = $tmpFields;
             }
         } else {
-            throw new DatabaseStatementExceptions('Field cannot be empty');
+            throw new DatabaseStatementExceptions('Field cannot be empty', Config::getInstance()->getLog());
         }
     }
 

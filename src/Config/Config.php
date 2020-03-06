@@ -346,7 +346,7 @@ class Config extends ObjectAbstract {
                 break;
             }
             default:{
-                throw new DatabaseConfigExceptions('Unknown key in config', Config::getInstance());
+                throw new DatabaseConfigExceptions('Unknown key in config', Config::getInstance()->getLog());
             }
         }
     }

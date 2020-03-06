@@ -3,6 +3,7 @@ namespace Database\Statements;
 
 
 use Database\AbstractClasses\Statement_Abstract;
+use Database\Config\Config;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Statements\Basic\Field;
 use Database\Statements\Basic\Value;
@@ -20,7 +21,7 @@ class Having extends Statement_Abstract
         if($value !== '') {
             $this->_value = new Value($value);
         } else {
-            throw new DatabaseExceptions('Value cannot be empty');
+            throw new DatabaseExceptions('Value cannot be empty', Config::getInstance()->getLog());
         }
     }
 

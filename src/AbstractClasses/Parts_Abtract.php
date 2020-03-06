@@ -2,6 +2,7 @@
 namespace Database\AbstractClasses;
 
 
+use Database\Config\Config;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Statements\Union;
 
@@ -24,14 +25,14 @@ abstract class Parts_Abtract
                     foreach($this->_sql_parts[$queryPart] as $innerPart){
                         $part = $innerPart->toSql();
                         if ($innerPart->isMandatory() && $part === '') {
-                            throw new DatabaseExceptions(get_class($innerPart) . ' must filled');
+                            throw new DatabaseExceptions(get_class($innerPart) . ' must filled', Config::getInstance()->getLog());
                         }
                         $query .= $innerPart->toSql() . ' ';
                     }
                 } else {
                     $part = $this->_sql_parts[$queryPart]->toSql();
                     if ($this->_sql_parts[$queryPart]->isMandatory() && $part === '') {
-                        throw new DatabaseExceptions(get_class($this->_sql_parts[$queryPart]) . ' must filled');
+                        throw new DatabaseExceptions(get_class($this->_sql_parts[$queryPart]) . ' must filled', Config::getInstance()->getLog());
                     }
                     $query .= $this->_sql_parts[$queryPart]->toSql() . ' ';
                 }

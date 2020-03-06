@@ -2,6 +2,7 @@
 namespace Database\Statements\Where\Functions;
 
 
+use Database\Config\Config;
 use Database\Exceptions\DatabaseStatementExceptions;
 use Database\Parts\Select;
 use Database\Statements\Basic\Field;
@@ -18,7 +19,7 @@ class SubSelectWhere extends Select {
         if($field !== null){
             $this->_field = new Field($field);
         } else {
-            throw new DatabaseStatementExceptions('Field cannot be empty');
+            throw new DatabaseStatementExceptions('Field cannot be empty', Config::getInstance()->getLog());
         }
         $this->_separator = new Separator('=');
     }

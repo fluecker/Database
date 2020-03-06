@@ -25,10 +25,10 @@ class DatabaseFunctions {
             if($connection->getConnection()) {
                 return $connection->getConnection()->real_escape_string($string);
             } else {
-                throw new NoConnectionExceptions('No Connection');
+                throw new NoConnectionExceptions('No Connection', Config::getInstance()->getLog());
             }
         } catch (\Exception $ex){
-            throw new DatabaseExceptions($ex->getMessage());
+            throw new DatabaseExceptions($ex->getMessage(), Config::getInstance()->getLog());
         }
 
     }

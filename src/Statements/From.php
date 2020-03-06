@@ -3,6 +3,7 @@ namespace Database\Statements;
 
 
 use Database\AbstractClasses\Statement_Abstract;
+use Database\Config\Config;
 use Database\Exceptions\DatabaseStatementExceptions;
 use Database\Functions\DatabaseFunctions;
 use Database\Statements\Basic\Field;
@@ -42,7 +43,7 @@ class From extends Statement_Abstract {
                 $this->setFieldTable(new Field($tables));
             }
         } else {
-            throw new DatabaseStatementExceptions('Table cannot be empty');
+            throw new DatabaseStatementExceptions('Table cannot be empty', Config::getInstance()->getLog());
         }
     }
 

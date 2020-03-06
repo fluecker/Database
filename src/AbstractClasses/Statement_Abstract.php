@@ -2,6 +2,7 @@
 namespace Database\AbstractClasses;
 
 
+use Database\Config\Config;
 use Database\Exceptions\DatabaseStatementExceptions;
 use Database\Statements\Basic\Not;
 use Database\Statements\Where\Functions\BetweenStatement;
@@ -110,9 +111,9 @@ abstract class Statement_Abstract {
      */
     protected function validateField(string $field){
         if($field == '') {
-            throw new DatabaseStatementExceptions('Field cannot be empty', []);
+            throw new DatabaseStatementExceptions('Field cannot be empty', Config::getInstance()->getLog());
         } elseif(is_numeric($field)) {
-            throw new DatabaseStatementExceptions('Field cannot be an numeric value', []);
+            throw new DatabaseStatementExceptions('Field cannot be an numeric value', Config::getInstance()->getLog());
         }
 
         return true;

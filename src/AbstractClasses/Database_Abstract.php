@@ -2,6 +2,7 @@
 namespace Database\AbstractClasses;
 
 use Config\MainConnection;
+use Database\Config\Config;
 use Database\Exceptions\DatabaseConnectionExceptions;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Exceptions\DatabaseQueryException;
@@ -146,7 +147,7 @@ abstract class Database_Abstract {
             }
 
             if($this->_connection->connect_errno) {
-                throw new NoConnectionExceptions('No Connection', $this->_config->getLog());
+                throw new NoConnectionExceptions('No Connection', Config::getInstance()->getLog());
             }
 
             if($settings->getCharset() !== ''){
@@ -157,7 +158,7 @@ abstract class Database_Abstract {
 
             return true;
         } catch(\Exception $ex) {
-            throw new DatabaseConnectionExceptions($this->_connection->error, $this->_config->getLog());
+            throw new DatabaseConnectionExceptions($this->_connection->error, Config::getInstance()->getLog());
         }
     }
 
@@ -198,7 +199,7 @@ abstract class Database_Abstract {
                 DatabaseLog::add($query, $this->_config->getLog(), $this->_method, $executionTime);
             }
         } else {
-            throw new NoConnectionExceptions('No Connection', $this->_config->getLog());
+            throw new NoConnectionExceptions('No Connection', Config::getInstance()->getLog());
         }
 
         if(!$this->_config->isDebug()) {
@@ -211,7 +212,7 @@ abstract class Database_Abstract {
                     return true;
                 }
             } else {
-                throw new DatabaseQueryException($this->_connection->error, $this->_config->getLog());
+                throw new DatabaseQueryException($this->_connection->error, Config::getInstance()->getLog());
             }
         } else {
             $this->_funcname = '';
@@ -243,10 +244,10 @@ abstract class Database_Abstract {
             if($result) {
                 return $this->prepareResult($result);
             } else {
-                throw new DatabaseExceptions('Es ist ein Fehler im Datanbank Result aufgetreten.', $this->_config->getLog());
+                throw new DatabaseExceptions('Es ist ein Fehler im Datanbank Result aufgetreten.', Config::getInstance()->getLog());
             }
         } else {
-            throw new NoConnectionExceptions('No Connection', $this->_config->getLog());
+            throw new NoConnectionExceptions('No Connection', Config::getInstance()->getLog());
         }
     }
 
@@ -276,7 +277,7 @@ abstract class Database_Abstract {
         if($this->_connection) {
             $this->_connection->close();
         } else {
-            throw new NoConnectionExceptions('No Connection', $this->_config->getLog());
+            throw new NoConnectionExceptions('No Connection', Config::getInstance()->getLog());
         }
     }
 }

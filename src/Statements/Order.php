@@ -2,7 +2,10 @@
 namespace Database\Statements;
 
 use Database\AbstractClasses\Statement_Abstract;
+use Database\Exceptions\DatabaseExceptions;
 use Database\Statements\Basic\Field;
+use Database\Statements\Fields\Fields;
+use Statements\Cases\Cases;
 
 class Order extends Statement_Abstract {
     protected $_column = [];
@@ -23,6 +26,25 @@ class Order extends Statement_Abstract {
             }
 
             $this->_column[$direction] = new Field($column[0]);
+        }
+    }
+
+    /**
+     * @param mixed $_when
+     * @param string|null $_field
+     * @param string|null $_else
+     * @param string $direction
+     * @return $this|Cases
+     * @throws DatabaseExceptions
+     */
+    public function addCase($_when = null, ?string $_field = null, ?string $_else = null, string $direction = 'ASC'){
+
+        if($_when !== null || $_field !== null || $_else !== null) {
+            $this->_column[$direction] = new Cases($_when, $_field, $_else);
+            return $this;
+        } else {
+            $this->_column[$direction] = new Cases($_when, $_field, $_else);
+            return end($this->_column);
         }
     }
 
