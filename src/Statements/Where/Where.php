@@ -3,6 +3,7 @@ namespace Database\Statements\Where;
 
 
 use Database\AbstractClasses\Statement_Abstract;
+use Database\Config\Config;
 use Database\Exceptions\DatabaseStatementExceptions;
 use Database\Functions\DatabaseFunctions;
 use Database\Statements\Basic\Separator;
@@ -52,10 +53,10 @@ class Where extends Statement_Abstract
                     if ($where[0] !== '') {
                         $this->_collection[] = new CommonStatement($where[0], $where[1], isset($where[2]) ? $where[2] : null);
                     } else {
-                        throw new DatabaseStatementExceptions('Column cannot be empty', null);
+                        throw new DatabaseStatementExceptions('Column cannot be empty', Config::getInstance()->getLog());
                     }
                 } else {
-                    throw new DatabaseStatementExceptions('Where cannot be empty', null);
+                    throw new DatabaseStatementExceptions('Where cannot be empty', Config::getInstance()->getLog());
                 }
             } else {
                 $this->_collection[] = new ColumnStatement($where);

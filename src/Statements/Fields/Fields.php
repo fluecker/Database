@@ -3,6 +3,7 @@ namespace Database\Statements\Fields;
 
 
 use Database\AbstractClasses\Statement_Abstract;
+use Database\Config\Config;
 use Database\Exceptions\DatabaseExceptions;
 use Database\Exceptions\DatabaseStatementExceptions;
 use Database\Statements\Basic\AddDate;
@@ -56,9 +57,16 @@ class Fields extends Statement_Abstract {
         if($fields !== null) {
             if (is_array($fields) && count($fields) > 0) {
                 foreach ($fields as $field) {
-                    $hash = md5($field);
-                    if (!isset($this->_fields[$hash]) && $this->validateField($field)) {
-                        $this->_fields[$hash] = new Field($field);
+                    if(is_array($field) && isset($field[1])){
+                        $hash = md5($field[0]);
+                        if (!isset($this->_fields[$hash]) && $this->validateField($field[0])) {
+                            $this->_fields[$hash] = new Field($field[0], $field[1]);
+                        }
+                    } else {
+                        $hash = md5($field);
+                        if (!isset($this->_fields[$hash]) && $this->validateField($field)) {
+                            $this->_fields[$hash] = new Field($field);
+                        }
                     }
                 }
             } elseif (!is_array($fields) && $fields !== '') {
@@ -67,7 +75,7 @@ class Fields extends Statement_Abstract {
                     $this->_fields[$hash] = new Field((string)$fields);
                 }
             } else {
-                throw new DatabaseStatementExceptions('Field cannot be empty');
+                throw new DatabaseStatementExceptions('Field cannot be empty', Config::getInstance()->getLog());
             }
         }
 
@@ -99,7 +107,7 @@ class Fields extends Statement_Abstract {
                 break;
             }
             default:{
-                throw new DatabaseExceptions('Call undefined function: ' . $name);
+                throw new DatabaseExceptions('Call undefined function: ' . $name, Config::getInstance()->getLog());
                 break;
             }
         }

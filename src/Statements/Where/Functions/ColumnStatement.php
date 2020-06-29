@@ -22,27 +22,35 @@ class ColumnStatement extends Where_Abstract
 
     /**
      * ColumnStatement constructor.
-     * @param array $column
+     * @param array $input
      * @throws \Database\Exceptions\DatabaseExceptions
      */
     public function __construct(array $input){
-        if(is_array($input[0])){
+        if(is_array($input[0]) && isset($input[0][1])){
             $func = $input[0][1];
             $val = $input[0][0];
             $this->$func($val, isset($input[0][2]) ? $input[0][2] : false);
         } else {
-            $this->_column[] = new Field($input[0]);
+            if(is_array($input[0]) && isset($input[0][0])){
+                $this->_column[] = new Field($input[0][0]);
+            } else {
+                $this->_column[] = new Field($input[0]);
+            }
         }
 
-        if(is_array($input[1])){
+        if(is_array($input[1]) && isset($input[1][1])){
             $func = $input[1][1];
             $val = $input[1][0];
             $this->$func($val, isset($input[1][2]) ? $input[1][2] : false);
         } else {
-            $this->_column[] = new Field($input[1]);
+            if(is_array($input[1]) && isset($input[1][0])){
+                $this->_column[] = new Field($input[1][0]);
+            } else {
+                $this->_column[] = new Field($input[1]);
+            }
         }
 
-        $this->_separator = new Separator((isset($input[2]) ? $input[2] : null));
+        $this->_separator = new Separator((isset($input[2][0]) ? $input[2][0] : null));
     }
 
     /**

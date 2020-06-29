@@ -80,7 +80,7 @@ class Database extends Database_Abstract {
                 DatabaseFunctions::selectDatabase($this->_config->getMainConnection()->getDatabase(), $this);
                 DatabaseFunctions::setCharset($this->_config->getMainConnection()->getCharset(), $this);
             } else {
-                throw new NoConnectionExceptions('No Connection', $this->_config);
+                throw new NoConnectionExceptions('No Connection', $this->_config->getLog());
             }
         }
     }
