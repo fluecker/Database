@@ -203,7 +203,7 @@ abstract class Database_Abstract {
 
         if(!$this->_config->isDebug()) {
             if ($this->_result) {
-                if($this->_funcname === 'Select') {
+                if($this->_funcname === 'Select' || $this->_funcname === '') {
                     $this->_funcname = '';
                     return $this->getQueryResult($this->_result, $this->_connection);
                 } else {
@@ -234,14 +234,18 @@ abstract class Database_Abstract {
      * Erzeugt das Datanbankresult
      * @param $result
      * @param $connection
-     * @return array|object
+     * @return bool|array|object
      * @throws DatabaseExceptions
      * @throws NoConnectionExceptions
      */
     public function getQueryResult($result, $connection){
         if($connection) {
             if($result) {
-                return $this->prepareResult($result);
+                if(!is_bool($result)) {
+                    return $this->prepareResult($result);
+                } else {
+                    return $result;
+                }
             } else {
                 throw new DatabaseExceptions('Es ist ein Fehler im Datanbank Result aufgetreten.', $this->_config->getLog());
             }
@@ -260,10 +264,6 @@ abstract class Database_Abstract {
 
         while($content = $result->fetch_object()) {
             $return[] = $content;
-        }
-
-        if(is_array($return) && count($return) === 1){
-            $return = $return[0];
         }
 
         return $return;

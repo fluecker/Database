@@ -19,7 +19,7 @@ class Field extends Basic_Abstract {
     public function __construct(string $name, string $alias = null){
         parent::__construct($alias);
         if(empty($name) || $name === ''){
-            throw new DatabaseExceptions('Column cannot be empty');
+            throw new DatabaseExceptions('Column cannot be empty', null);
         } else {
 
             if(DatabaseFunctions::allowedMysqlFunction($name)){

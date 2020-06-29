@@ -45,22 +45,20 @@ class Where extends Statement_Abstract
      * @throws DatabaseStatementExceptions
      * @throws \Database\Exceptions\DatabaseExceptions
      */
-    public function setWhere(array $where): void {
-        if(DatabaseFunctions::getArrayDepth($where) < 2) {
-            if (is_array($where) && count($where) > 0) {
-                foreach ($where as $key => $wh) {
-                    if ($wh[0] !== '') {
-                        $this->_collection[] = new CommonStatement($wh[0], $wh[1], isset($wh[2]) ? $wh[2] : null);
+    public function setWhere(array $wheres): void {
+        foreach($wheres as $where) {
+            if (DatabaseFunctions::getArrayDepth($where) < 1) {
+                if (is_array($where) && count($where) > 0) {
+                    if ($where[0] !== '') {
+                        $this->_collection[] = new CommonStatement($where[0], $where[1], isset($where[2]) ? $where[2] : null);
                     } else {
-                        throw new DatabaseStatementExceptions('Column cannot be empty');
+                        throw new DatabaseStatementExceptions('Column cannot be empty', null);
                     }
+                } else {
+                    throw new DatabaseStatementExceptions('Where cannot be empty', null);
                 }
             } else {
-                throw new DatabaseStatementExceptions('Where cannot be empty');
-            }
-        } else {
-            foreach ($where as $key => $wh) {
-                    $this->_collection[] = new ColumnStatement($wh);
+                $this->_collection[] = new ColumnStatement($where);
             }
         }
     }
